@@ -1,6 +1,0 @@
-#Necessary functions: De-trending, Estimation of KM-Coefficients, Calculation of Power mismatch, Calculation of c_2
-'''Different models: 1: linear c_1 and epsilon, no c_2 and Delta_P
-                     2: linear c_1,c_2 and epsilon,
-                     3: cubic c_1(omega), state-dependent c_2 and epsilon
-                     4: 
-'''
