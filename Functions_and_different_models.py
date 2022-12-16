@@ -170,13 +170,14 @@ def daily_profile(data,time_res = 1):
   day_number = data.size//(24*3600time_res)
   for i in range(daily_prof.size):
     daily_profile[i] = np.mean([data[i+3600*24*j]for j in range(day_number)])
+  return daily_profile
 
 '''3. Calculation of the power mismatch'''
 '''Calculate the power mismatch as the derivative of the trajectories around times of power dispatches:'''
 
 '''Delta_P: Find ROCOF in (5-minutes-interval around full hours (resp. power injections)!)'''
 
-power_mismatch(data,dispatch=2,start_minute=0,end_minute=7,length_seconds_of_interval=5):
+power_mismatch(data,avg_for_each_hour = 'True',dispatch=2,start_minute=0,end_minute=7,length_seconds_of_interval=5):
   '''Attention: Use the data that you want to use for the power mismatch (for ex. for Ireland we take 5-second filtered data because of hourly and 60-seconds-junks)'''
   data_range = data.size//(3600*24)
   s,e,l = start_minute,end_minute,length_seconds_of_interval
@@ -189,10 +190,27 @@ power_mismatch(data,dispatch=2,start_minute=0,end_minute=7,length_seconds_of_int
           argm[i,j] = np.argmax(np.abs([curve_fit( lambda t , a , b : a + b*t , np.linspace( 0 , end , steps ) , data[ i*int(3600/dispatch)+ 3600 * 24 * j  -s*60 + k*l -l : i*int(3600/dispatch)+ 3600 * 24 * j -s*60 + k*l + l] , p0 = ( 0.0 , 0.0 ) ,maxfev=10000)[ 0 ][ 1 ] for k in range(1,int((s+e)*60/l))]))
           Delta_P_slopes[i,j] =  (curve_fit( lambda t , a , b : a + b*t , np.linspace( 0 , end , steps ) , data[ i*int(3600/dispatch)+ 3600 * 24 * j  -s*60 + int(argm[i,j]+1)*l -l : i*int(3600/dispatch)+ 3600 * 24 * j -s*60 +  int(argm[i,j]+1)*l + l] , p0 = ( 0.0 , 0.0 ) ,maxfev=10000)[ 0 ][ 1 ] )
 
- 
-
-
-'''Calculation of c_2 from the exponential decay'''
+   sign = np.zeros(change*24)
+   daily_profile = daily_profile(data)
+   daily_prof_25 = np.zeros(25*3600*time_res)   #add 1st hour of daily profile to the daily prile to calculate the average sign of the slope at each power dispatch
+   daily_prof_25[0:24*3600*time_res] = daily_profile
+   daily_prof_25[24*3600*time_res:] = daily_profile[0:1*24*3600*time_res]
+   for i in range(sign.size):
+       if np.mean(np.diff(daily_prof_25[(i+1)*(int(4/change))*900 -int(s*60) : (i+1)*(int(4/change))*900 + int(e*60)])) > 0:
+        sign[(i+1)%24]=1
+       else:
+        sign[(i+1)%24]=-1
+  P_arr = np.zeros(24*change)
+  for i in range(24*change):
+      P_arr[i] = np.mean(np.abs(Delta_P_slopes[i,:]))
+  if avg_for_each_hour = 'True':
+    Delta_P = sign*P_arr
+  else:
+    Delta_P = np.mean(np.abs(Delta_P_slopes[i,:]))
+  
+  
+  
+  '''Calculation of c_2 from the exponential decay'''
 '''4. STATE-DEPENDENT Secondary control c_2 /( EXPERIMENTATION)!!!'''
 
 gap   =0
