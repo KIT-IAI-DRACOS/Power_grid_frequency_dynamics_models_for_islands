@@ -277,3 +277,12 @@ omega_arr = np.linspace(-0.5,0.5,101)
 c_2_arr = np.mean(temp_c_2_decays)*(3*(-p_3)*omega_arr**2 - p_1)
 
 '''Euler-Maruyama'''
+
+def Euler_Maruyama(data,delta_t,t_final):
+  
+  
+  
+  
+  
+  
+
