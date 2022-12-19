@@ -213,72 +213,48 @@ power_mismatch(data,avg_for_each_hour = 'True',dispatch=2,start_minute=0,end_min
   '''Calculation of c_2 from the exponential decay'''
 '''4. STATE-DEPENDENT Secondary control c_2 /( EXPERIMENTATION)!!!'''
 
-gap   =0
-size  = 899
-steps = size+1
 
-window = 3600
-data_range = data.size // window
 
-c_2_decays = np.zeros(data_range)
+def exp_decay(data,time_res,size = 899):
+  #gap   =0
+  size  = 899
+  steps = size+1
 
-for j in range(1,data_range) :
-    # i f the f r e q u e n c y t r a j e c t o r y moves p o s i t i v e l y
-    
-    if np.sum(( np.diff( data[ 3600 *( j ) : 3600 * ( j ) +10]) ) ) > 0 :
-        c_2_decays[j] = curve_fit(lambda t , a , b :#,  c : 
-        a*np.exp(-b*t ) ,#* (1-np.exp(-c * t+2*b* t ) ) ,
-        np.linspace( 0 , size ,steps ) , data[ 3600 * ( j ) -gap: 3600 * ( j )-gap + steps] ,
-        p0 = ( 0.08 , 0.00455 
-             ),#, 0.035  ) , 
-        maxfev=10000)[ 0 ][ 1 ]
-#g = datafilter
-'''Use g (datafilter with sigma =60) for calculating c_2'''      
-#     if np.sum(( np.diff( g[ 3600 *( j ) : 3600 * ( j ) +10]) ) ) > 0 :
-#         c_2_decays[j] = curve_fit(lambda t , a , b  : 
-#         a*np.exp(-b*t )/(q_1-2*b),# * (1-np.exp(-c * t+2*b* t ) ) ,   #use different c_? !!!
-#         np.linspace( 0 , size ,steps ) , g[ 3600 * ( j ) -gap: 3600 * ( j )-gap + steps] ,
-#         p0 = ( 0.08 , 0.00455 
-#              ),#, 0.035  ) , 
-#         maxfev=10000)[ 0 ][ 1 ]
-print(c_2_decays)
+  window = 3600
+  data_range = data.size // window
 
-for j in range(1,data_range) :
-    
-    if np.sum(( np.diff( data[ 3600 *( j ) : 3600 * ( j ) +10]) ) ) <= 0 :
-        c_2_decays[j] = curve_fit(lambda t , a , b :#,,  c : 
-        (-a)*np.exp(-b*t ) ,#* (1-np.exp(-c * t+2*b* t ) ) ,
-        np.linspace( 0 , size ,steps ) , data[ 3600 * ( j ) -gap: 3600 * ( j )-gap + steps] ,
-        p0 = ( 0.08 , 0.00455 
-             ),#, 0.035  ) , 
-        maxfev=10000)[ 0 ][ 1 ]
-        
-    '''Use g (datafilter with sigma =60) for calculating c_2'''   
-#     if np.sum(( np.diff( g[ 3600 *( j ) : 3600 * ( j ) +10]) ) ) <= 0 :
-#         c_2_decays[j] = curve_fit(lambda t , a , b :#,,  c : 
-#         (-a)*np.exp(-b*t )/(q_1-2*b) ,#* (1-np.exp(-c * t+2*b* t ) ) ,             #use different c_? !!!
-#         np.linspace( 0 , size ,steps ) , g[ 3600 * ( j ) -gap: 3600 * ( j )-gap + steps] ,
-#         p0 = ( 0.08 , 0.00455 
-#              ),#, 0.035  ) , 
-#         maxfev=10000)[ 0 ][ 1 ]
-print(c_2_decays)
+  c_2_decays = np.zeros(data_range)
 
-c_2_decays
-temp_c_2_decays = c_2_decays[np.argsort(c_2_decays)][: - c_2_decays.size // 5]
-# c_2_linear = np.mean(temp_c_2_decays ) * (c_1)
-# #c_2 = np.mean(temp_c_2_decays ) * (c_21)
-# #c_2 = np.mean(temp_c_2_decays ) * (-q_1)
-# c_2_pol = np.mean(temp_c_2_decays ) * (-p_1)
-# c_2_far = np.mean(temp_c_2_decays ) * (-p_3)
-# '''Attention: sign!'''
-# c_2_linear,c_2_pol,c_2_far, c_1
+  for j in range(1,data_range) :
+      # if the frequency trajectory increases positively
+      if np.sum(( np.diff( data[ 3600 *( j ) : 3600 * ( j ) +10]) ) ) > 0 :
+          c_2_decays[j] = curve_fit(lambda t , a , b :#,  c : 
+          a*np.exp(-b*t ) ,#* (1-np.exp(-c * t+2*b* t ) ) ,
+          np.linspace( 0 , size ,steps ) , data[ 3600 * ( j ) : 3600 * ( j ) + steps] ,
+          p0 = ( 0.08 , 0.00455 
+               ),#, 0.035  ) , 
+          maxfev=10000)[ 0 ][ 1 ]
+      elif np.sum(( np.diff( data[ 3600 *( j ) : 3600 * ( j ) +10]) ) ) <= 0 :
+          c_2_decays[j] = curve_fit(lambda t , a , b :#,,  c : 
+          (-a)*np.exp(-b*t ) ,#* (1-np.exp(-c * t+2*b* t ) ) ,
+          np.linspace( 0 , size ,steps ) , data[ 3600 * ( j ) -gap: 3600 * ( j )-gap + steps] ,
+          p0 = ( 0.08 , 0.00455 
+               ),#, 0.035  ) , 
+          maxfev=10000)[ 0 ][ 1 ]
+    temp_c_2_decays = c_2_decays[np.argsort(c_2_decays)][: - c_2_decays.size // 5]
+    return np.mean(temp_c_2_decays )
+  # c_2_linear = np.mean(temp_c_2_decays ) * (c_1)
+  #omega_arr = np.linspace(-0.5,0.5,101)
+  #c_2_arr = np.mean(temp_c_2_decays)*(3*(-p_3)*omega_arr**2 - p_1)
 
-omega_arr = np.linspace(-0.5,0.5,101)
-c_2_arr = np.mean(temp_c_2_decays)*(3*(-p_3)*omega_arr**2 - p_1)
+
+
 
 '''Euler-Maruyama'''
 
 def Euler_Maruyama(data,delta_t,t_final):
+  t_steps = int(t_final/delta_t)
+  
   
   
   
