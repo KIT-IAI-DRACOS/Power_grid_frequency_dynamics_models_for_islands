@@ -54,57 +54,64 @@ def integrate_omega(data,time_res=1,start_value = 0):
 '''1.Calculation the noise amplitude'''
 
 '''here: Use angular velocity (omega) instead of frequency(f)'''
-def KM_Coeff_1 (data,dimension = 1,bandwidth,interval)
+def KM_Coeff_1 (data,dimension = 1,time_res = 1,bandwidth,dist,multiplicative_noise = 'True')
   if dimension = 1:
     powers = [0,1,2]
     bins = np.array([6000])
   '''dimension signifies the usage of the univariate or the bivariate Fokker-Planck equation''' 
-  elif dimension = 2:
+    kmc, edges = km(data,powers = powers,bins = bins,bw=bandwidth)
+    zero_frequency = np.argmin(space[0]**2)
+    if multiplicative_noise == 'False':
+      epsilon = np.sqrt(np.mean(kmc[2,zero_frequency-dist:zero_frequency+dist])*2)
+    if multiplicative_noise == 'True':
+      peak = zero_frequency-500+np.argmin(kmc[2,zero_frequency-500:zero_frequency+500])
+      np.argmin(kmc[2,zero_frequency-500:zero_frequency+500]**2),zero_frequency,zero_frequency-500+np.argmin(kmc[2,zero_frequency-500:zero_frequency+500])
+      dist = 350
     
-  kmc, edges = km(data,powers = powers,bins = bins,bw=bandwidth)
-  '''Attention: use here as data the detrended data (doriginal data minus filter'''
-  zero_frequency = np.argmin(space[0]**2)
-  #dist = 500
-  '''old model: constant epsilon'''
-  epsilon = np.sqrt(np.mean(kmc[2,zero_frequency-dist:zero_frequency+dist])*2)
-  #epsilon = np.sqrt((diffusion[1,zero_frequency])*2)
+    d_2 = curve_fit(lambda t , a  : a*(t-0)**2 + kmc[2,zero_frequency],space[ 0 ][zero_frequency-dist:zero_frequency+dist],kmc[2,peak-dist:peak+dist])[0]
+    diff_zero=kmc[2,peak]
+    d_0=diff_zero
+    epsilon = (d_2,d_0)
+   
+  elif dimension = 2:
+    '''Use dist as 2-dimensional array in this case: 1st entry: voltage angle, 2nd entry: angular velocity'''
+    powers = np.array([[0,0],[1,0],[0,1],[1,1],[2,0],[0,2],[2,2]])
+    bins = np.array([300,300])
+    kmc, edges = km(data,powers = powers,bins = bins,bw=bandwidth)
+    '''Attention: use here as data the detrended data (doriginal data minus filter'''
+    zero_angle = np.argmin(edges[0]**2)
+    zero_frequency = np.argmin(edges[1]**2)
+    if multiplicative_noise == 'False':
+      epsilon = np.sqrt(2*np.mean(kmc[5,zero_angle-dist[0]:zero_angle+dist[0],zero_frequency-dist[1]:zero_frequency+dist[1]]/time_res))  
+      #epsilon = np.sqrt(2*np.mean(kmc[5,zero_angle:zero_angle,zero_frequency:zero_frequency]/time_res)) #only use mean
+      
+    elif multiplicative_noise == 'True':
+      def f_0_2(x, a, b):
+        return 0*(x[0])+a*(x[1])**2 + b   #!!!
+      '''Define start and end'''
+      #s1,e1,s2,e2 = 120,-120,5,-5
 
-  peak = zero_frequency-500+np.argmin(kmc[2,zero_frequency-500:zero_frequency+500])
-  np.argmin(kmc[2,zero_frequency-500:zero_frequency+500]**2),zero_frequency,zero_frequency-500+np.argmin(kmc[2,zero_frequency-500:zero_frequency+500])
-  peak
-
-  dist = 350
-  '''Try density-dependent epsilon:'''
-  '''new model (resp. one new model): density(frequency)-dependent noise'''
-  #d_2 = curve_fit(lambda t , a  : a*(t-0)**2 + kmc[2,zero_frequency],space[ 0 ][zero_frequency-dist:zero_frequency+dist],kmc[2,zero_frequency-dist:zero_frequency+dist])[0]    
-  d_2 = curve_fit(lambda t , a  : a*(t-0)**2 + kmc[2,zero_frequency],space[ 0 ][zero_frequency-dist:zero_frequency+dist],kmc[2,peak-dist:peak+dist])[0]    
-
-  # #e_4,e_3,e_2,e_1,e_0
-  #diff_zero=kmc[2,zero_frequency]
-  diff_zero=kmc[2,peak]
-
-  d_0=diff_zero
-  # def e(x):
-  #     eps = np.sqrt(2*(d*x**34 + diff_0))
-  #     return eps
+      side_x = edges[0][zero_angle-dist[0]:zero_angle+dist[0]]
+      side_y = edges[1][zero_frequency-dist[1]:zero_frequency+dist[1]]
+      X1, X2 = np.meshgrid(side_x, side_y)
+      size = X1.shape
+      x1_1d = X1.reshape((1, np.prod(size)))
+      x2_1d = X2.reshape((1, np.prod(size)))
+      xdata = np.vstack((x1_1d, x2_1d))
+      z=(np.array([[kmc[5,zero_angle-dist[0]+i,zero_frequency-dist[1]+j]/time_res for i in range(2*dist[0])] for j in range(2*dist[1])]))
+      Z = z.reshape(( np.prod(size_1)))
+      ydata = Z
+      popt, pcov = curve_fit(f_0_2, xdata, ydata)
+      epsilon = popt
+  return epsilon
+      
 
 
 
-  '''Simple (stupid) model: Ornstein-Uhlenbeck process:'''
-  kmc_simple, edges_2_simple = km(data,powers = [0,1,2],bins = np.array([6000]),bw=bw_diff)
-  space_simple = edges_2_simple
-  #np.shape(diffusion_simple)
-  np.shape(space_simple)
-  zero_frequency_simple = np.argmin(space_simple[0]**2)
-  #zero_frequency_simple = np.argmin(diffusion_simple[1])#[1500:-1500])+1500
-  peak_simple = space_simple[0][zero_frequency_simple]
 
-  '''old model: constant epsilon'''
-  dist_simple = 500
-  epsilon_simple = np.sqrt(np.mean(kmc_simple[2,zero_frequency_simple-dist_simple:zero_frequency_simple+dist_simple])*2)
-  #epsilon_simple = np.sqrt((diffusion_simple[1,zero_frequency_simple])*2)
 
-  epsilon,d_2,d_0,epsilon_simple
+
+
 
 
   
@@ -114,51 +121,43 @@ def KM_Coeff_1 (data,dimension = 1,bandwidth,interval)
 
 '''2. Estimation of the drift (primary control)'''
 def KM_Coeff_1(data,):
-  def KM_Coeff_1 (data,sigma=60,,dimension = 1,bandwidth,interval)
+  def KM_Coeff_1 (data,sigma=60,dimension = 1,bandwidth,dist,order = 1)
   if dimension = 1:
     powers = [0,1,2]
     bins = np.array([6000])
-  '''dimension signifies the usage of the univariate or the bivariate Fokker-Planck equation''' 
-  elif dimension = 2:
-    
-    
-  kmc,edges = km(data,powers = powers,bins = bins,bw=bandwidth)
-  '''Attention: use here as data the detrended data (doriginal data minus filter'''
-  mid_point = np.argmin(edges[0]**2)
-  #D = 1300
-  D = 300
-  D_lin=500
-  '''old model: constant c_1'''
-  c_1 = curve_fit(lambda t,a,b: a - b*t , xdata = space[ 0 ][mid_point-D_lin:mid_point+D_lin] ,ydata = kmc[1][ mid_point - D_lin: mid_point + D_lin] , p0 = ( 0.0002 ,0.0005 ) ,maxfev=10000)[ 0 ][ 1 ]
+    kmc,edges = km(data,powers = powers,bins = bins,bw=bandwidth)
+    '''dimension signifies the usage of the univariate or the bivariate Fokker-Planck equation''' 
+  
+    zero_frequency = np.argmin(edges[0]**2)
+    #D = 1300
+    D = 300
+    D_lin=500
+    '''old model: constant c_1'''
+    c = np.polyfit(space[ 0 ][zero_frequency-dist:zero_frequency+dist] , kmc[1][ zero_frequency - dist: zero_frequency + dist] ,order)
+    #c_1 = curve_fit(lambda t,a,b: a - b*t , xdata = space[ 0 ][mid_point-D_lin:mid_point+D_lin] ,ydata = kmc[1][ mid_point - D_lin: mid_point + D_lin] , p0 = ( 0.0002 ,0.0005 ) ,maxfev=10000)[ 0 ][ 1 ]
+    #p_3,p_2,p_1,p_0=np.polyfit(space[ 0 ][mid_point-D:mid_point+D] , kmc[1][ mid_point - D: mid_point + D] ,3)
+  
+    elif dimension = 2:
+      powers = np.array([[0,0],[1,0],[0,1],[1,1],[2,0],[0,2],[2,2]])
+      bins = np.array([300,300])
+      kmc,edges = km(data,powers = powers,bins = bins,bw=bandwidth)
+      def f_0_1(x,p_1,c_2):
+        return p_1*x[1] + c_2 *x[0]   #+p_3*x[1]**3 #+ p_2*x[1]**2
+      '''Define start and end'''
+      #s1,e1,s2,e2 = 120,-120,5,-5
 
-'''new model (resp. one new model): polynomial drift'''
-p_3,p_2,p_1,p_0=np.polyfit(space[ 0 ][mid_point-D:mid_point+D] , kmc[1][ mid_point - D: mid_point + D] ,3)
-
-#np.shape(drift)
-#c_3,c_2,c_1,c_0
-#c_15,c_14,c_13,c_12,c_11,c_10
-#c_13,c_12,c_11,c_10
-#c_1=np.abs(p_1)
-#print('c_1: %f'%c_1)
-
-'''Simple (stupid) model: Ornstein-Uhlenbeck process:'''
-kmc_simple, edges_1_simple = km(data,powers = [0,1,2],bins = np.array([6000]),bw=bw_drift)#0.05)##bw_drift)
-#drift, edges_1 = km(data_diff,powers = [0,1],bins = np.array([6000]),bw=bw_drift)
-
-space_simple = edges_1_simple
-mid_point_simple = np.argmin(space_simple[0]**2)
-
-D_lin=500
-'''old model: constant c_1'''
-c_1_simple = curve_fit(lambda t,a,b: a - b*t , xdata = space_simple[ 0 ][mid_point_simple-D_lin:mid_point_simple+D_lin] ,ydata = kmc_simple[1][ mid_point_simple - D_lin: mid_point_simple + D_lin] , p0 = ( 0.0002 ,0.0005 ) ,maxfev=10000)[ 0 ][ 1 ]
-
-
-
-print(p_3,p_2,p_1,p_0)
-print(c_1)
-print(c_1_simple)
-#q_7,q_6,q_5,q_4,q_3,q_2,q_1,q_0
-print(q_5,q_4,q_3,q_2,q_1,q_0)
+      side_x = edges[0][zero_angle-dist[0]:zero_angle+dist[0]]
+      side_y = edges[1][zero_frequency-dist[1]:zero_frequency+dist[1]]
+      X1, X2 = np.meshgrid(side_x, side_y)
+      size = X1.shape
+      x1_1d = X1.reshape((1, np.prod(size)))
+      x2_1d = X2.reshape((1, np.prod(size)))
+      xdata = np.vstack((x1_1d, x2_1d))
+      z=(np.array([[kmc[5,zero_angle-dist[0]+i,zero_frequency-dist[1]+j]/time_res for i in range(2*dist[0])] for j in range(2*dist[1])]))
+      Z = z.reshape(( np.prod(size_1)))
+      ydata = Z
+      popt, pcov = curve_fit(f_0_1, xdata, ydata)
+      c = popt
 
 
 
@@ -254,11 +253,43 @@ def exp_decay(data,time_res,size = 899):
 
 def Euler_Maruyama(data,delta_t,t_final):
   t_steps = int(t_final/delta_t)
+  time = np.linspace(0.0, t_final, t_steps)
+  
+  omega_new = np.zeros([time.size]) 
+  theta_new = np.zeros([time.size])
+  # Give some small random initial conditions
+  theta_new[0]=np.random.normal(size = 1) / 10    
+  omega_new[0]=np.random.normal(size = 1) / 10
+  # Generate a Wiener process with a scale of np.sqrt(delta_t)
+  dW = np.random.normal(loc = 0, scale = np.sqrt(delta_t), size = [time.size,1])
+
+
+  
+  for i in range(1,time.size):
+    theta[i] = theta[i-1] + delta_t * omega[i-1]
+    omega[i] = omega[i-1] + delta_t * (  1 * c_dead[i-1]*c_1_weight[i-1] *(1*p_3*(omega_new[i-1])**3 + p_1*omega_new[i-1] 0)
+                                     - 0 * c_dead[i-1] * c_1 * (omega_new[i-1]) #Subtracted filter!!!
+                                     - 1 * c_2_prod[i-1] * theta[i-1]   
+                                       #- 0*c_2_var[i-1]*theta_new[i-1]     #Function of c_band: secondary control is working only in a certain interval
+                                       #- 0*c_2_pol*theta_new[i-1]     
+                                       - 0*c_2_linear*theta_new[i-1]  
+                                       #+ 1* sign_P[i]*P[i]*Delta_P_old   ) + eps_state[i-1] * dW[i] # + np.sqrt(2*(d_2*(omega_new[i-1] - 0*P_test[(i//(4*900*mul))%(24)] )**2+d_0))*dW[i] #+ epsilon * dW[i] #
+                                       #+1*power[i] ) + 1*eps_state[i-1] * dW[i] #+ epsilon * dW[i] #                                        #+ 1* P_slow[i] *P[i]* sign_P[i]* Delta_P_new_avg ) + eps_state[i-1] * dW[i] #+ epsilon * dW[i] #
+                                       +1*Delta_P_new[(i//(int(4/change)*900*mul))%(change*24)] )  + 1*eps_state[i-1] * dW[i] # + epsilon * dW[i] # 
   
   
   
-  
-  
-  
+'''Define Increments'''
+  def Increments(data,time_res = 1,step_seconds = 1):
+    Inc = np.zeros(int(data.size*time_res/(step))-1)
+    for i in Inc.size:
+      Inc[i] = data[int((i+1)*step/time_res)] - data[int((i)*step/time_res)]
+      return Inc
+    
+'''Define autocorrelation function'''
+  def autocor(data,count=6*90,steps=10,time_res = 1):
+      data = pd.Series(data)
+      AUTO_data= np.array([data.autocorr(lag=int(i*steps/time_res) for i in range(count)])
+      return AUTO_data
   
 
