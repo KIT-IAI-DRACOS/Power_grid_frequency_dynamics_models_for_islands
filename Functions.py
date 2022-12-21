@@ -220,10 +220,8 @@ def exp_decay(data,time_res,size = 899):
   #gap   =0
   size  = 899
   steps = size+1
-
   window = 3600
   data_range = data.size // window
-
   c_2_decays = np.zeros(data_range)
 
   for j in range(1,data_range) :
@@ -253,7 +251,7 @@ def exp_decay(data,time_res,size = 899):
 
 '''Euler-Maruyama'''
 
-def Euler_Maruyama(data,delta_t,t_final,model,c_1,c_2,Delta_P,epsilon):
+def Euler_Maruyama(data,delta_t,t_final,model,c_1,c_2,Delta_P,epsilon,factor_daily_profile=0):
  
   t_steps = int(t_final/delta_t)
   time = np.linspace(0.0, t_final, t_steps)
@@ -267,19 +265,25 @@ def Euler_Maruyama(data,delta_t,t_final,model,c_1,c_2,Delta_P,epsilon):
   dW = np.random.normal(loc = 0, scale = np.sqrt(delta_t), size = [time.size,1])
 
   def c_1_fun(x):
-    if c_1.size ==2:
-      c_1_fun = c_1[0] * x**3 + c_1[1]*x
-    elif c_1.size ==1:
-      c_1_fun = c_1*x
+    if model == 4:
+      c_1_fun = c_1[0]*x
+    else
+      if c_1.size ==2:
+        c_1_fun = c_1[0] * x**3 + c_1[1]*x
+      elif c_1.size ==1:
+        c_1_fun = c_1*x
     return c_1_fun
   
   def c_2_fun(x):
-    if c_1.size ==2:
-      c_2_fun = exp_decay(data,time_res,size = 899)*(3*(-c_1[0])*x**2 - c_1[1])
-      '''Attention: time_res in c_2 is original time resolution'''
-    elif c_1.size ==1:
-      c_2_fun = exp_decay(data,time_res,size = 899)*c_1
-      '''Attention: time_res in c_2 is original time resolution'''
+    if model == 4:
+      c_2_fun = c_1[1] 
+    else:
+      if c_1.size ==2:
+        c_2_fun = exp_decay(data,time_res,size = 899)*(3*(-c_1[0])*x**2 - c_1[1])
+        '''Attention: time_res in c_2 is original time resolution'''
+      elif c_1.size ==1:
+        c_2_fun = exp_decay(data,time_res,size = 899)*c_1
+        '''Attention: time_res in c_2 is original time resolution'''
     return c_1_fun
   
   def epsilon_fun(x):
@@ -310,7 +314,10 @@ def Euler_Maruyama(data,delta_t,t_final,model,c_1,c_2,Delta_P,epsilon):
     omega[i] = omega[i-1] + delta_t * (  1 * c_1_weight[i-1] * c_1_fun(omega[i-1])
                                        - 1 * c_2_fun(omega[i-1]) * theta[i-1]   
                                        + 1*Delta_P_fun(i) )  + 1*epsilon_fun(omega[i-1])
-  
+  if model == 4:
+    omega = omega + factor_daily_profile*day_filter[(i%int(3600*24/delta_t))//int(1/delta_t)] #describe day_filter
+  else:
+    omega = omega
   return omega
          
          '''Define Increments'''
