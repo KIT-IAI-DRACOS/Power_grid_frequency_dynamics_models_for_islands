@@ -1,3 +1,9 @@
+
+
+
+from .Data_cleaning import data_cleaning
+
+
 grids = ['Balearic','Irish','Iceland']
 models = ['model 1','model 2','model 3','model 4']
 
