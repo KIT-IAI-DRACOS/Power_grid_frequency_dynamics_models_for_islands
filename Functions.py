@@ -28,7 +28,7 @@ data = (freq+50)/(2*np.pi)
 
 '''Detrending of the time series:'''
 
-def filter(data,sigma = 60):
+def data_filter(data,sigma = 60):
   datafilter = gaussian_filter1d(data,sigma=sigma)
   return datafilter
 
