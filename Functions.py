@@ -54,7 +54,7 @@ def integrate_omega(data,time_res=1,start_value = 0):
 '''1.Calculation the noise amplitude'''
 
 '''here: Use angular velocity (omega) instead of frequency(f)'''
-def KM_Coeff_1 (data,dimension = 1,time_res = 1,bandwidth,dist,multiplicative_noise = 'True')
+def KM_Coeff_2(data,dimension = 1,time_res = 1,bandwidth,dist,multiplicative_noise = 'True')
   if dimension = 1:
     powers = [0,1,2]
     bins = np.array([6000])
