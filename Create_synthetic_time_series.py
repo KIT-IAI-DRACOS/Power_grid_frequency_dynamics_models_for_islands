@@ -1,8 +1,21 @@
-
+import pandas as pd
+import numpy as np
+import scipy as sc
+import seaborn
+import matplotlib.pyplot as plt
+from scipy.optimize import curve_fit
+from scipy.ndimage.filters import gaussian_filter1d
+#from scipy.ndimage import uniform_filter1d
+from scipy.stats import beta
+import sdeint
+#!pip install kramersmoyal
+from kramersmoyal import km
+from sklearn.neighbors import KernelDensity
+from scipy.stats import entropy
 
 
 from .Data_cleaning import data_cleaning
-
+from .Functions import data_filter, integrate_omega, KM_Coeff_1, KM_Coeff_2, daily_profile, power_mismatch, exp_decay, Euler_Maruyama, Increments, autocor 
 
 grids = ['Balearic','Irish','Iceland']
 models = ['model 1','model 2','model 3','model 4']
@@ -55,7 +68,7 @@ for grid in grids:
   data = ...
   data = data_cleaning(data)
   if grid = 'Balearic':
-    diff_drift = ...
+    bw_drift = ...
   elif grid = 'Irish':
     bw_drift = ...
   elif grid = 'Iceland':
