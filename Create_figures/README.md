@@ -30,7 +30,3 @@ With the plots come a few additional data sources that have generated the figure
 
 ## Plots
 
- - Figure 1: [plot1.py](https://github.com/DRACOS/Fokker-Planck-modelling-for-power-grid-frequency-on-islands/blob/main/plot1.py)
- - Figure 1: [plot2.py](https://github.com/DRACOS/Fokker-Planck-modelling-for-power-grid-frequency-on-islands/blob/main/plot1.py)
- - Figure 3: [plot3.py](https://github.com/DRACOS/Fokker-Planck-modelling-for-power-grid-frequency-on-islands/blob/main/plot3.py) [the script takes a quite a bit to run]
- - Figure 4: [plot4.py](https://github.com/DRACOS/Fokker-Planck-modelling-for-power-grid-frequency-on-islands/blob/main/plot4.py)
