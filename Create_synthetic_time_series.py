@@ -1,6 +1,9 @@
 grids = ['Balearic','Irish','Iceland']
 models = ['model 1','model 2','model 3','model 4']
 
+'''The bandwidth is chosen such that we receive a scmooth distribution'''
+
+
 '''Model 1...'''
 synth_data_model_1 = {}
 '''adapt the parameter estimation to the particulat grids'''
