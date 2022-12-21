@@ -118,3 +118,13 @@ for grid in grids:
   synth_data_model_4(grid) = omega_synth_model_4
   increments_model_4(grid) = Increments(omega_synth_model_4,...)
   autocor_model_4(grid) = autocor(omega_synth_model_4)
+
+  
+
+
+for grid in grids:
+  np.savez_compressed("Data_%s"%(file),freq_orig = data(grid)/(2*np.pi+50), freq_model_1 = synth_data_model_4(grid), freq_model_2 = synth_data_model_2(grid), freq_model_3 = synth_data_model_3(grid), freq_model_4 = synth_data_model_4(grid), incr_orig = Incr_freq, incr_model_1 = increments_model_1(grid), Incr_model_2 = increments_model_2(grid), incr_model_3 = increments_model_3(grid), incr_model_4 = increments_model_4(grid),  autocor_orig_90min = AUTO_freq(???), autocor_model_1_90min = autocor_model_1(grid), autocor_model_2_90min = autocor_model_2(grid), autocor_model_3_90min = autocor_model_3(grid), autocor_model_4_90min = autocor_model_4(grid))
+  
+  
+  
+  
