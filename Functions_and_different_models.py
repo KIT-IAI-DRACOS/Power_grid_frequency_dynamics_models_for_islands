@@ -134,6 +134,8 @@ def KM_Coeff_1(data,):
     D_lin=500
     '''old model: constant c_1'''
     c = np.polyfit(space[ 0 ][zero_frequency-dist:zero_frequency+dist] , kmc[1][ zero_frequency - dist: zero_frequency + dist] ,order)
+    c = [c[-1-2*i,-1] for i in range((c.size-2)//2)
+    '''Not sure yet if this is right'''
     #c_1 = curve_fit(lambda t,a,b: a - b*t , xdata = space[ 0 ][mid_point-D_lin:mid_point+D_lin] ,ydata = kmc[1][ mid_point - D_lin: mid_point + D_lin] , p0 = ( 0.0002 ,0.0005 ) ,maxfev=10000)[ 0 ][ 1 ]
     #p_3,p_2,p_1,p_0=np.polyfit(space[ 0 ][mid_point-D:mid_point+D] , kmc[1][ mid_point - D: mid_point + D] ,3)
   
@@ -251,35 +253,67 @@ def exp_decay(data,time_res,size = 899):
 
 '''Euler-Maruyama'''
 
-def Euler_Maruyama(data,delta_t,t_final):
+def Euler_Maruyama(data,delta_t,t_final,model,c_1,c_2,Delta_P,epsilon):
+ 
   t_steps = int(t_final/delta_t)
   time = np.linspace(0.0, t_final, t_steps)
   
-  omega_new = np.zeros([time.size]) 
-  theta_new = np.zeros([time.size])
+  omega = np.zeros([time.size]) 
+  theta = np.zeros([time.size])
   # Give some small random initial conditions
-  theta_new[0]=np.random.normal(size = 1) / 10    
-  omega_new[0]=np.random.normal(size = 1) / 10
+  theta[0]=np.random.normal(size = 1) / 10    
+  omega[0]=np.random.normal(size = 1) / 10
   # Generate a Wiener process with a scale of np.sqrt(delta_t)
   dW = np.random.normal(loc = 0, scale = np.sqrt(delta_t), size = [time.size,1])
 
-
+  def c_1_fun(x):
+    if c_1.size ==2:
+      c_1_fun = c_1[0] * x**3 + c_1[1]*x
+    elif c_1.size ==1:
+      c_1_fun = c_1*x
+    return c_1_fun
+  
+  def c_2_fun(x):
+    if c_1.size ==2:
+      c_2_fun = exp_decay(data,time_res,size = 899)*(3*(-c_1[0])*x**2 - c_1[1])
+      '''Attention: time_res in c_2 is original time resolution'''
+    elif c_1.size ==1:
+      c_2_fun = exp_decay(data,time_res,size = 899)*c_1
+      '''Attention: time_res in c_2 is original time resolution'''
+    return c_1_fun
+  
+  def epsilon_fun(x):
+    if epsilon.size ==2:
+      epsilon_fun = np.sqrt(2*(epsilon[0]*x**2 + epsilon[1]))
+    elif epsilon.size ==1:
+      epsilon_fun = epsilon
+         
+  def Delta_P_fun(i):
+    if model == 1:
+      Delta_P_fun = 0
+    elif model == 2:
+      P = np.ones(time.size)
+      sign_P = np.zeros(time.size)
+      if i % (12*3600/delta_t)  < 6*3600/delta_t:    #greater or equal is important here!!!
+        sign_P[i]=1
+      else:
+        sign_P[i]=-1
+      if i % (60*60/delta_t)  < (4/change)*15*60/delta_t:
+        P[i] = 1  #*q1_mean_half #0.5
+      else:
+        P[i] = 1/3     
+    elif model == 3:
+      Delta_P_fun[i] = Delta_P[(i//(int(4/dispatch)*900*mul))%(dispatch*24)]
   
   for i in range(1,time.size):
     theta[i] = theta[i-1] + delta_t * omega[i-1]
-    omega[i] = omega[i-1] + delta_t * (  1 * c_dead[i-1]*c_1_weight[i-1] *(1*p_3*(omega_new[i-1])**3 + p_1*omega_new[i-1] 0)
-                                     - 0 * c_dead[i-1] * c_1 * (omega_new[i-1]) #Subtracted filter!!!
-                                     - 1 * c_2_prod[i-1] * theta[i-1]   
-                                       #- 0*c_2_var[i-1]*theta_new[i-1]     #Function of c_band: secondary control is working only in a certain interval
-                                       #- 0*c_2_pol*theta_new[i-1]     
-                                       - 0*c_2_linear*theta_new[i-1]  
-                                       #+ 1* sign_P[i]*P[i]*Delta_P_old   ) + eps_state[i-1] * dW[i] # + np.sqrt(2*(d_2*(omega_new[i-1] - 0*P_test[(i//(4*900*mul))%(24)] )**2+d_0))*dW[i] #+ epsilon * dW[i] #
-                                       #+1*power[i] ) + 1*eps_state[i-1] * dW[i] #+ epsilon * dW[i] #                                        #+ 1* P_slow[i] *P[i]* sign_P[i]* Delta_P_new_avg ) + eps_state[i-1] * dW[i] #+ epsilon * dW[i] #
-                                       +1*Delta_P_new[(i//(int(4/change)*900*mul))%(change*24)] )  + 1*eps_state[i-1] * dW[i] # + epsilon * dW[i] # 
+    omega[i] = omega[i-1] + delta_t * (  1 * c_1_weight[i-1] * c_1_fun(omega[i-1])
+                                       - 1 * c_2_fun(omega[i-1]) * theta[i-1]   
+                                       + 1*Delta_P_fun(i) )  + 1*epsilon_fun(omega[i-1])
   
-  
-  
-'''Define Increments'''
+  return omega
+         
+         '''Define Increments'''
   def Increments(data,time_res = 1,step_seconds = 1):
     Inc = np.zeros(int(data.size*time_res/(step))-1)
     for i in Inc.size:
