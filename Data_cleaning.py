@@ -1,3 +1,20 @@
+import pandas as pd
+import numpy as np
+import scipy as sc
+import seaborn
+import matplotlib.pyplot as plt
+from scipy.optimize import curve_fit
+from scipy.ndimage.filters import gaussian_filter1d
+#from scipy.ndimage import uniform_filter1d
+from scipy.stats import beta
+import sdeint
+#!pip install kramersmoyal
+from kramersmoyal import km
+from sklearn.neighbors import KernelDensity
+from scipy.stats import entropy
+
+from .Data import data 
+
 data_cleaning(data)
     limit = 0.05
 
