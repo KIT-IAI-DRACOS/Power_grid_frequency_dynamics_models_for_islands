@@ -50,7 +50,7 @@ def integrate_omega(data,time_res=1,start_value = 0):
 '''1.Calculation the noise amplitude'''
 
 '''here: Use angular velocity (omega) instead of frequency(f)'''
-def KM_Coeff_2(data,dim= 1,time_res = 1,bandwidth,dist,multiplicative_noise = 'True') 
+def KM_Coeff_2(data,dim= 1,time_res = 1,bandwidth=0.1,dist,multiplicative_noise = 'True') 
   if dim = 1:
     powers = [0,1,2]
     bins = np.array([6000])
@@ -58,11 +58,11 @@ def KM_Coeff_2(data,dim= 1,time_res = 1,bandwidth,dist,multiplicative_noise = 'T
     kmc, edges = km(data,powers = powers,bins = bins,bw=bandwidth)
     zero_frequency = np.argmin(space[0]**2)
     if multiplicative_noise == 'False':
-      epsilon = np.sqrt(np.mean(kmc[2,zero_frequency-dist:zero_frequency+dist])*2)
+      epsilon = np.sqrt(2*np.mean(kmc[2,zero_frequency-dist:zero_frequency+dist]))
     elif multiplicative_noise == 'True':
       peak = zero_frequency-500+np.argmin(kmc[2,zero_frequency-500:zero_frequency+500])
       np.argmin(kmc[2,zero_frequency-500:zero_frequency+500]**2),zero_frequency,zero_frequency-500+np.argmin(kmc[2,zero_frequency-500:zero_frequency+500])
-      dist = 350
+ 
     
     d_2 = curve_fit(lambda t , a  : a*(t-0)**2 + kmc[2,zero_frequency],space[ 0 ][zero_frequency-dist:zero_frequency+dist],kmc[2,peak-dist:peak+dist])[0]
     diff_zero=kmc[2,peak]
@@ -81,7 +81,7 @@ def KM_Coeff_2(data,dim= 1,time_res = 1,bandwidth,dist,multiplicative_noise = 'T
       epsilon = np.sqrt(2*np.mean(kmc[5,zero_angle-dist[0]:zero_angle+dist[0],zero_frequency-dist[1]:zero_frequency+dist[1]]/time_res))  
       #epsilon = np.sqrt(2*np.mean(kmc[5,zero_angle:zero_angle,zero_frequency:zero_frequency]/time_res)) #only use mean
       
-    elif multiplicative_noise == 'True':
+    elif multiplicative_noise == True:
       def f_0_2(x, a, b):
         return 0*(x[0])+a*(x[1])**2 + b   #!!!
       '''Define start and end'''
