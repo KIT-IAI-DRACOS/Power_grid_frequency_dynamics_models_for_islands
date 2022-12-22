@@ -37,15 +37,11 @@ data_detrended = data - datafilter
 
 '''Integration of the angular velocity for calcualtion of theta (voltage angle)'''
 '''Integrate the omegas by using a sum'''
-
 def integrate_omega(data,time_res=1,start_value = 0):
-  #def theta_int_unscaled(t):
-  #s = 0.1 * np.sum(data_100ms[start_int:t])
-  #return s
   theta = np.zeros(data.size)
   theta[start_value] = data[start_value]
   for i in range(start_value + 1,data.size - start_value):
-      theta[i] = theta[i-1] + 1*data[i]
+      theta[i] = theta[i-1] + time_res * data[i]
   '''scale values of theta by substracting the average'''
   theta = theta-np.mean(theta)
   return theta
@@ -54,16 +50,16 @@ def integrate_omega(data,time_res=1,start_value = 0):
 '''1.Calculation the noise amplitude'''
 
 '''here: Use angular velocity (omega) instead of frequency(f)'''
-def KM_Coeff_2(data,dimension = 1,time_res = 1,bandwidth,dist,multiplicative_noise = 'True')
-  if dimension = 1:
+def KM_Coeff_2(data,dim= 1,time_res = 1,bandwidth,dist,multiplicative_noise = 'True') 
+  if dim = 1:
     powers = [0,1,2]
     bins = np.array([6000])
-  '''dimension signifies the usage of the univariate or the bivariate Fokker-Planck equation''' 
+  '''dim signifies the usage of the univariate or the bivariate Fokker-Planck equation ''' 
     kmc, edges = km(data,powers = powers,bins = bins,bw=bandwidth)
     zero_frequency = np.argmin(space[0]**2)
     if multiplicative_noise == 'False':
       epsilon = np.sqrt(np.mean(kmc[2,zero_frequency-dist:zero_frequency+dist])*2)
-    if multiplicative_noise == 'True':
+    elif multiplicative_noise == 'True':
       peak = zero_frequency-500+np.argmin(kmc[2,zero_frequency-500:zero_frequency+500])
       np.argmin(kmc[2,zero_frequency-500:zero_frequency+500]**2),zero_frequency,zero_frequency-500+np.argmin(kmc[2,zero_frequency-500:zero_frequency+500])
       dist = 350
@@ -73,7 +69,7 @@ def KM_Coeff_2(data,dimension = 1,time_res = 1,bandwidth,dist,multiplicative_noi
     d_0=diff_zero
     epsilon = (d_2,d_0)
    
-  elif dimension = 2:
+  elif dim = 2:
     '''Use dist as 2-dimensional array in this case: 1st entry: voltage angle, 2nd entry: angular velocity'''
     powers = np.array([[0,0],[1,0],[0,1],[1,1],[2,0],[0,2],[2,2]])
     bins = np.array([300,300])
@@ -211,11 +207,10 @@ power_mismatch(data,avg_for_each_hour = 'True',dispatch=2,start_minute=0,end_min
   
   
   
-  '''Calculation of c_2 from the exponential decay'''
+
+         
+'''Calculation of c_2 from the exponential decay after changes of th epower dispatches at full hours'''
 '''4. STATE-DEPENDENT Secondary control c_2 /( EXPERIMENTATION)!!!'''
-
-
-
 def exp_decay(data,time_res,size = 899):
   #gap   =0
   size  = 899
@@ -240,6 +235,7 @@ def exp_decay(data,time_res,size = 899):
           p0 = ( 0.08 , 0.00455 
                ),#, 0.035  ) , 
           maxfev=10000)[ 0 ][ 1 ]
+    '''Cut off statistical outliers by cutting off 1/5 of the highest values of the power decay'''
     temp_c_2_decays = c_2_decays[np.argsort(c_2_decays)][: - c_2_decays.size // 5]
     return np.mean(temp_c_2_decays )
   # c_2_linear = np.mean(temp_c_2_decays ) * (c_1)
