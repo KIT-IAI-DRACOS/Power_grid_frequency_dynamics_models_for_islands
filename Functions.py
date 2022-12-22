@@ -307,7 +307,7 @@ def Euler_Maruyama(data,delta_t,t_final,model,c_1,c_2,Delta_P,epsilon,factor_dai
       else:
         P[i] = 1/3     
     elif model == 3:
-      Delta_P_fun[i] = Delta_P[(i//(int(4/dispatch)*900*mul))%(dispatch*24)]
+      Delta_P_fun[i] = Delta_P[(i//(int(4/dispatch)*900*mul))%(dispatch*24)] #define "power"-function (continuous Delta_P)
   
   for i in range(1,time.size):
     theta[i] = theta[i-1] + delta_t * omega[i-1]
