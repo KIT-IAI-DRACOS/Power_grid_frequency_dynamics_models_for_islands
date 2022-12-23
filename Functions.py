@@ -308,7 +308,7 @@ def Euler_Maruyama(data,delta_t,t_final,model,c_1,c_2,Delta_P,epsilon,factor_dai
       else:
          P_slow = 1
       Delta_P_fun[i] = 1* P_slow * Delta_P[(i//(int(4/dispatch)*900/delta_t))%(dispatch*24)]  +(1-P_slow[i])*  Delta_P_new[((i//(int(4/dispatch)*900/delta_t))-1)%(dispatch*24)]
-  
+      '''for Model 3 consider smooth changes in the construction of the power mismatch step function''' 
   for i in range(1,time.size):
     theta[i] = theta[i-1] + delta_t * omega[i-1]
     omega[i] = omega[i-1] + delta_t * (  1 * c_1_weight[i-1] * c_1_fun(omega[i-1])
