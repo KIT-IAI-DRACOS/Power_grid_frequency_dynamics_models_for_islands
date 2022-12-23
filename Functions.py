@@ -84,8 +84,7 @@ def KM_Coeff_2(data,dim= 1,time_res = 1,bandwidth=0.1,dist,multiplicative_noise 
     elif multiplicative_noise == True:
       def f_0_2(x, a, b):
         return 0*(x[0])+a*(x[1])**2 + b   #!!!
-      '''Define start and end'''
-      #s1,e1,s2,e2 = 120,-120,5,-5
+   
 
       side_x = edges[0][zero_angle-dist[0]:zero_angle+dist[0]]
       side_y = edges[1][zero_frequency-dist[1]:zero_frequency+dist[1]]
@@ -116,9 +115,8 @@ def KM_Coeff_2(data,dim= 1,time_res = 1,bandwidth=0.1,dist,multiplicative_noise 
   
 
 '''2. Estimation of the drift (primary control)'''
-def KM_Coeff_1(data,):
-  def KM_Coeff_1 (data,sigma=60,dimension = 1,bandwidth,dist,order = 1)
-  if dimension = 1:
+def KM_Coeff_1(data,dim= 1,time_res = 1,bandwidth=0.1,dist,order = 3):
+  if dim = 1:
     powers = [0,1,2]
     bins = np.array([6000])
     kmc,edges = km(data,powers = powers,bins = bins,bw=bandwidth)
@@ -135,7 +133,7 @@ def KM_Coeff_1(data,):
     #c_1 = curve_fit(lambda t,a,b: a - b*t , xdata = space[ 0 ][mid_point-D_lin:mid_point+D_lin] ,ydata = kmc[1][ mid_point - D_lin: mid_point + D_lin] , p0 = ( 0.0002 ,0.0005 ) ,maxfev=10000)[ 0 ][ 1 ]
     #p_3,p_2,p_1,p_0=np.polyfit(space[ 0 ][mid_point-D:mid_point+D] , kmc[1][ mid_point - D: mid_point + D] ,3)
   
-    elif dimension = 2:
+    elif dim = 2:
       powers = np.array([[0,0],[1,0],[0,1],[1,1],[2,0],[0,2],[2,2]])
       bins = np.array([300,300])
       kmc,edges = km(data,powers = powers,bins = bins,bw=bandwidth)
@@ -219,7 +217,7 @@ def exp_decay(data,time_res,size = 899):
   data_range = data.size // window
   c_2_decays = np.zeros(data_range)
 
-  for j in range(1,data_range) :
+  for j in range(1,data_range):
       # if the frequency trajectory increases positively
       if np.sum(( np.diff( data[ 3600 *( j ) : 3600 * ( j ) +10]) ) ) > 0 :
           c_2_decays[j] = curve_fit(lambda t , a , b :#,  c : 
@@ -298,17 +296,17 @@ def Euler_Maruyama(data,delta_t,t_final,model,c_1,c_2,Delta_P,epsilon,factor_dai
         sign_P[i]=1
       else:
         sign_P[i]=-1
-      if i % (60*60/delta_t)  < (4/change)*15*60/delta_t:
+      if i % (60*60/delta_t)  < (4/dispatch)*15*60/delta_t:
         P[i] = 1  #*q1_mean_half #0.5
       else:
-        P[i] = 1/3     
+        P[i] = 1/3     #heuristic choice as the change of the power dispatch at the begin of an hour is normally higher than at other times
     elif model == 3:
-      if i%(900*mul*int(4/change)) <60:   #TAKE 60 seconds!!!
+      if i%(900*mul*int(4/dispatch)) <60:   #TAKE 60 seconds!!!
         P_slow = i%(900/delta_t*int(4/dispatch))/60
       else:
          P_slow = 1
       Delta_P_fun[i] = 1* P_slow * Delta_P[(i//(int(4/dispatch)*900/delta_t))%(dispatch*24)]  +(1-P_slow[i])*  Delta_P_new[((i//(int(4/dispatch)*900/delta_t))-1)%(dispatch*24)]
-      '''for Model 3 consider smooth changes in the construction of the power mismatch step function''' 
+  
   for i in range(1,time.size):
     theta[i] = theta[i-1] + delta_t * omega[i-1]
     omega[i] = omega[i-1] + delta_t * (  1 * c_1_weight[i-1] * c_1_fun(omega[i-1])
