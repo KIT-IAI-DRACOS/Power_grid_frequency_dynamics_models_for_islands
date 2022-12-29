@@ -1,7 +1,7 @@
 # %%
 import numpy as np
 
-data_sources_1d = ['Iceland_data.npz', 'Irish_data.npz', 'Balearic_data.npz']
+data_sources = ['Iceland_data.npz', 'Irish_data.npz', 'Balearic_data.npz']
 
 #data_sources_2d = ['Iceland_data_new_2d_model.npz',
 #                   'Irish_data_new_2d_model.npz',
@@ -9,10 +9,10 @@ data_sources_1d = ['Iceland_data.npz', 'Irish_data.npz', 'Balearic_data.npz']
 
 filenames = ['Iceland', 'Ireland', 'Balearic']
 
-def sort_data(data_1d_loc, data_2d_loc, filename):
+def sort_data(data_loc, filename):
 
-    data_1d = np.load(data_1d_loc)
-    data_2d = np.load(data_2d_loc)
+    data = np.load(data_loc)
+    #data_2d = np.load(data_2d_loc)
 
 
     d = {'freq_orig': 'freq_origin',
@@ -31,29 +31,29 @@ def sort_data(data_1d_loc, data_2d_loc, filename):
          'autocor_model_3_90min': 'auto_model3',
          'autocor_model_4_90min': 'auto_model4'}
 
-    data = {}
+    data_renamed = {}
 
     for key, val in d.items():
         #if key in data_1d.keys():
-            data[val] = data_1d[key]
+            data_renamed[val] = data[key]
         #if key in data_2d.keys():
             #data[val] = data_2d[key]
 
 
-    np.savez_compressed(filename, **data)
+    np.savez_compressed(filename, **data_renamed)
 
     return
 
 # %%
 
 ## Iceland data:
-sort_data(data_sources_1d[0], data_sources_2d[0], filenames[0])
+sort_data(data_sources[0], filenames[0])
 
 ## Iceland data:
-sort_data(data_sources_1d[1], data_sources_2d[1], filenames[1])
+sort_data(data_sources[1], filenames[1])
 
 ## Balearic data:
-sort_data(data_sources_1d[2], data_sources_2d[2], filenames[2])
+sort_data(data_sources[2], filenames[2])
 
 
 # %% data soruting for Fig2
