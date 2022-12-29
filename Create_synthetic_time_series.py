@@ -33,8 +33,8 @@ for grid in grids:
   dist_drift = 500
   dist_diff = 500
   
-  c_1 = ...
-  epsilon = ...
+  c_1 = KM_Coeff_1(data,dim= 1,time_res = 1,bandwidth = bw_drift,dist = dist_drift, order = 1)
+  epsilon = KM_Coeff_2(data,dim = 1,time_res = 1,bandwidth = bw_diff,dist = dist_diff,multiplicative_noise = False)
   omega_synth_model_1 = Euler_Maruyama(...)
   
   synth_data_model_1(grid) = omega_synth_model_1
@@ -47,22 +47,23 @@ increments_model_2 = {}
 autocor_model_2 = {}
 '''adapt the parameter estimation to the particulat grids'''
 for grid in grids:
+  trend = 1 #trend is boolean
   data = ...
   data = data_cleaning(data)
   bw_drift = 0.1
   bw_diff = 0.1
   dist_drift = 500
   dist_diff = 500
-  if grid = 'Balearic':
-    data = data_filter(data)
-  elif grid = 'Irish':
-    data = data_filter(data)
-  #elif grid = 'Iceland':
-  c_1 = ...
-  c_2 = ...
-  if grid != 'Iceland':
-    Delta_P = ...
-  epsilon = ...
+  if grid == 'Balearic':
+    Delta_P = power_mismatch(data,avg_for_each_hour = False,dispatch=2,start_minute=0,end_minute=1/6,length_seconds_of_interval=5):
+  elif grid == 'Irish':
+    Delta_P = power_mismatch(data,avg_for_each_hour = False,dispatch=2,start_minute=0,end_minute=1/6,length_seconds_of_interval=5):
+  elif grid == 'Irish':
+    Delta_P = 0
+    trend = 0 # Represents a no-existing trend as there is no power dispatch schedule
+  c_1 = KM_Coeff_1(data - trend*data_filter(data),dim= 1,time_res = 1,bandwidth = bw_drift,dist = dist_drift, order = 1)
+  c_2 = trend*exp_decay(data,time_res=1,size = 899)
+  epsilon =   epsilon = KM_Coeff_2(data - trend*data_filter(data),dim = 1,time_res = 1,bandwidth = bw_diff,dist = dist_diff,multiplicative_noise = False)
   omega_synth_model_2 = Euler_Maruyama(...)
   
   synth_data_model_2(grid) = omega_synth_model_2
@@ -75,24 +76,25 @@ increments_model_3 = {}
 autocor_model_3 = {}
 '''adapt the parameter estimation to the particulat grids'''
 for grid in grids:
+  trend = 1
   data = ...
   data = data_cleaning(data)
   bw_drift = 0.1
   bw_diff = 0.1
   dist_drift = 1200
   if grid = 'Balearic':
-    data = data_filter(data)
     dist_diff = 350
+    Delta_P = power_mismatch(data,avg_for_each_hour = True,dispatch=1,start_minute=-2,end_minute=0,length_seconds_of_interval=5)
   elif grid = 'Irish':
-    data = data_filter(data)
+    Delta_P = power_mismatch(data,avg_for_each_hour = True,dispatch=1,start_minute=-2,end_minute=0,length_seconds_of_interval=5)
     dist = 500
   elif grid = 'Iceland':
     dist_diff = 300
-  c_1 = ...
-  c_2 = ...
-  if grid != 'Iceland':
-    Delta_P = ...
-  epsilon = ...
+    Delta_P = 0
+    trend = 0 # Represents a no-existing trend as there is no power dispatch schedule
+  c_1 = KM_Coeff_1(data - trend * data_filter(data),dim= 1,time_res = 1,bandwidth = bw_drift,dist = dist_drift, order = 3)
+  c_2 = trend * exp_decay(data,time_res=1,size = 899)
+  epsilon =   epsilon = KM_Coeff_2(data - trend*data_filter(data), dim = 1, time_res = 1, bandwidth = bw_diff, dist = dist_diff, multiplicative_noise = True)
   omega_synth_model_3 = Euler_Maruyama(...)
   
   synth_data_model_3(grid) = omega_synth_model_3
@@ -105,6 +107,7 @@ increments_model_4 = {}
 autocor_model_4 = {}
 '''adapt the parameter estimation to the particulat grids'''
 for grid in grids:
+  trend = 1
   data = ...
   data = data_cleaning(data)
   bw_drift, bw_diff = 0.05, 0.05
@@ -114,10 +117,11 @@ for grid in grids:
     dist_drift, dist_diff = 15,15
   elif grid = 'Iceland':
     dist_drift, dist_diff = 20,20
-  c_1 = ...
-  c_2 = ...
+    trend = 0
+  c_1 = KM_Coeff_1(data - trend*data_filter(data),dim= 2,time_res = 1,bandwidth = bw_drift,dist = dist_drift, order = 1)[0]
+  c_2 = KM_Coeff_1(data - trend*data_filter(data),dim= 2,time_res = 1,bandwidth = bw_drift,dist = dist_drift, order = 1)[1]
   Delta_P = ...
-  epsilon = ...
+  epsilon =   epsilon =  KM_Coeff_2(data - trend*data_filter(data), dim = 2, time_res = 1, bandwidth = bw_diff, dist = dist_diff, multiplicative_noise = True)
   omega_synth_model_4 = Euler_Maruyama(...)
   
   synth_data_model_4(grid) = omega_synth_model_4
