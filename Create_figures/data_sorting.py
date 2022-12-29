@@ -3,9 +3,9 @@ import numpy as np
 
 data_sources_1d = ['Iceland_data.npz', 'Irish_data.npz', 'Balearic_data.npz']
 
-data_sources_2d = ['Iceland_data_new_2d_model.npz',
-                   'Irish_data_new_2d_model.npz',
-                   'Balearic_data_new_2d_model.npz']
+#data_sources_2d = ['Iceland_data_new_2d_model.npz',
+#                   'Irish_data_new_2d_model.npz',
+#                   'Balearic_data_new_2d_model.npz']
 
 filenames = ['Iceland', 'Ireland', 'Balearic']
 
@@ -16,28 +16,28 @@ def sort_data(data_1d_loc, data_2d_loc, filename):
 
 
     d = {'freq_orig': 'freq_origin',
-         'freq_simple_model': 'freq_model1',
-         'freq_old_model': 'freq_model2',
-         'freq_new_1d_model': 'freq_model3',
-         'freq_new_2d_model': 'freq_model4',
+         'freq_model_1': 'freq_model1',
+         'freq_model_2': 'freq_model2',
+         'freq_model_3': 'freq_model3',
+         'freq_model_4': 'freq_model4',
          'incr_orig': 'incr_origin',
-         'incr_simple_model': 'incr_model1',
-         'incr_old_model': 'incr_model2',
-         'Incr_new_1d_model': 'incr_model3',
-         'Incr_new_2d_model': 'incr_model4',
+         'incr_model_1': 'incr_model1',
+         'incr_model_2': 'incr_model2',
+         'incr_model_3': 'incr_model3',
+         'incr_model_4': 'incr_model4',
          'autocor_orig_90min': 'auto_origin',
-         'autocorr_simple_90min': 'auto_model1',
-         'autocor_old_model_90min': 'auto_model2',
-         'autocor_new_1d_model_90min': 'auto_model3',
-         'autocor_new_2d_model_90min': 'auto_model4'}
+         'autocor_model_1_90min': 'auto_model1',
+         'autocor_model_2_90min': 'auto_model2',
+         'autocor_model_3_90min': 'auto_model3',
+         'autocor_model_4_90min': 'auto_model4'}
 
     data = {}
 
     for key, val in d.items():
-        if key in data_1d.keys():
+        #if key in data_1d.keys():
             data[val] = data_1d[key]
-        if key in data_2d.keys():
-            data[val] = data_2d[key]
+        #if key in data_2d.keys():
+            #data[val] = data_2d[key]
 
 
     np.savez_compressed(filename, **data)
