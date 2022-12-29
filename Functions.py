@@ -1,17 +1,12 @@
+#!pip install kramersmoyal
+
 import pandas as pd
 import numpy as np
 import scipy as sc
-import seaborn
 import matplotlib.pyplot as plt
 from scipy.optimize import curve_fit
 from scipy.ndimage.filters import gaussian_filter1d
-#from scipy.ndimage import uniform_filter1d
-from scipy.stats import beta
-import sdeint
-#!pip install kramersmoyal
 from kramersmoyal import km
-from sklearn.neighbors import KernelDensity
-from scipy.stats import entropy
 
 '''For calculations: use angular velocity omega = 2*pi*frequency '''
 
@@ -32,7 +27,7 @@ def data_filter(data,sigma = 60):
   datafilter = gaussian_filter1d(data,sigma=sigma)
   return datafilter
 
-datafilter = filter(data,sigma = 60)
+datafilter = data_filter(data,sigma = 60)
 data_detrended = data - datafilter
 
 '''Integration of the angular velocity for calcualtion of theta (voltage angle)'''
@@ -50,7 +45,7 @@ def integrate_omega(data,time_res=1,start_value = 0):
 '''1.Calculation the noise amplitude'''
 
 '''here: Use angular velocity (omega) instead of frequency(f)'''
-def KM_Coeff_2(data,dim= 1,time_res = 1,bandwidth=0.1,dist,multiplicative_noise = 'True') 
+def KM_Coeff_2(data,dim = 1,time_res = 1,bandwidth=0.1,dist,multiplicative_noise = True) 
   if dim = 1:
     powers = [0,1,2]
     bins = np.array([6000])
@@ -115,7 +110,7 @@ def KM_Coeff_2(data,dim= 1,time_res = 1,bandwidth=0.1,dist,multiplicative_noise 
   
 
 '''2. Estimation of the drift (primary control)'''
-def KM_Coeff_1(data,dim= 1,time_res = 1,bandwidth=0.1,dist,order = 3):
+def KM_Coeff_1(data,dim= 1,time_res = 1,bandwidth=0.1,dist, order = 3):
   if dim = 1:
     powers = [0,1,2]
     bins = np.array([6000])
@@ -136,6 +131,7 @@ def KM_Coeff_1(data,dim= 1,time_res = 1,bandwidth=0.1,dist,order = 3):
     elif dim = 2:
       powers = np.array([[0,0],[1,0],[0,1],[1,1],[2,0],[0,2],[2,2]])
       bins = np.array([300,300])
+         data = ... #use theta as integrated omega
       kmc,edges = km(data,powers = powers,bins = bins,bw=bandwidth)
       def f_0_1(x,p_1,c_2):
         return p_1*x[1] + c_2 *x[0]   #+p_3*x[1]**3 #+ p_2*x[1]**2
@@ -161,21 +157,26 @@ def KM_Coeff_1(data,dim= 1,time_res = 1,bandwidth=0.1,dist,order = 3):
 '''Calculate daily profiles:'''
 def daily_profile(data,time_res = 1):
   '''time_res represents the time resolution of the data'''
-  daily_profile=np.zeros(24*3600*time_res)
-  day_number = data.size//(24*3600time_res)
-  for i in range(daily_prof.size):
-    daily_profile[i] = np.mean([data[i+3600*24*j]for j in range(day_number)])
+  daily_profile=np.zeros(int(24*3600/time_res))
+  day_number = data.size//(int(24*3600/time_res))
+  for i in range(daily_profile.size):
+    daily_profile[i] = np.mean([data[i+int(3600*24/time_res)*j]for j in range(day_number)])
   return daily_profile
+         
+def day_profile_pointwise(i,data,time_res = 1,delta_t = 1):
+  daily_profile = daily_profile(data=data,time_res = time_res)
+  d = daily_profile[(i%(int(3600*24/delta_t)))//(int(1/delta_t))]
+         
 
 '''3. Calculation of the power mismatch'''
 '''Calculate the power mismatch as the derivative of the trajectories around times of power dispatches:'''
 
 '''Delta_P: Find ROCOF in (5-minutes-interval around full hours (resp. power injections)!)'''
 
-power_mismatch(data,avg_for_each_hour = 'True',dispatch=2,start_minute=0,end_minute=7,length_seconds_of_interval=5):
+power_mismatch(data,avg_for_each_hour = True,dispatch=2,start_minute=0,end_minute=7,length_seconds_of_interval=5):
   '''Attention: Use the data that you want to use for the power mismatch (for ex. for Ireland we take 5-second filtered data because of hourly and 60-seconds-junks)'''
   data_range = data.size//(3600*24)
-  s,e,l = start_minute,end_minute,length_seconds_of_interval
+  s,e,l = 0-start_minute,end_minute-0,length_seconds_of_interval
   end,steps = 2*length_seconds_of_interval, end + 1
   #m = np.zeros((24*change,data_range))
   argm = np.zeros((24*dispatch,data_range))
@@ -198,7 +199,7 @@ power_mismatch(data,avg_for_each_hour = 'True',dispatch=2,start_minute=0,end_min
   P_arr = np.zeros(24*change)
   for i in range(24*change):
       P_arr[i] = np.mean(np.abs(Delta_P_slopes[i,:]))
-  if avg_for_each_hour = 'True':
+  if avg_for_each_hour = True:
     Delta_P = sign*P_arr
   else:
     Delta_P = np.mean(np.abs(Delta_P_slopes[i,:]))
@@ -209,7 +210,7 @@ power_mismatch(data,avg_for_each_hour = 'True',dispatch=2,start_minute=0,end_min
          
 '''Calculation of c_2 from the exponential decay after changes of th epower dispatches at full hours'''
 '''4. STATE-DEPENDENT Secondary control c_2 /( EXPERIMENTATION)!!!'''
-def exp_decay(data,time_res,size = 899):
+def exp_decay(data,time_res=1,size = 899):
   #gap   =0
   size  = 899
   steps = size+1
@@ -245,7 +246,7 @@ def exp_decay(data,time_res,size = 899):
 
 '''Euler-Maruyama'''
 
-def Euler_Maruyama(data,delta_t,t_final,model,c_1,c_2,Delta_P,epsilon,factor_daily_profile=0):
+def Euler_Maruyama(data,delta_t=0.1,t_final=5,model,c_1,c_2,Delta_P,epsilon,factor_daily_profile=0):
  
   t_steps = int(t_final/delta_t)
   time = np.linspace(0.0, t_final, t_steps)
@@ -270,7 +271,7 @@ def Euler_Maruyama(data,delta_t,t_final,model,c_1,c_2,Delta_P,epsilon,factor_dai
   
   def c_2_fun(x):
     if model == 4:
-      c_2_fun = c_1[1] 
+      c_2_fun = c_2
     else:
       if c_1.size ==2:
         c_2_fun = exp_decay(data,time_res,size = 899)*(3*(-c_1[0])*x**2 - c_1[1])
