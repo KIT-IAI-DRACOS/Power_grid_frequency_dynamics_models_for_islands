@@ -17,7 +17,10 @@ from Functions import data_filter, integrate_omega, KM_Coeff_1, KM_Coeff_2, dail
 grids = ['Iceland','Irish','Balearic']
 models = ['model 1','model 2','model 3','model 4']
 
+
+'''For calculations: use angular velocity omega = 2*pi*frequency '''
 '''The bandwidth is chosen such that we receive a scmooth distribution'''
+
 
 
 '''Model 1...'''
@@ -57,7 +60,8 @@ for grid in grids:
   if grid == 'Balearic':
     Delta_P = power_mismatch(data,avg_for_each_hour = False,dispatch=2,start_minute=0,end_minute=1/6,length_seconds_of_interval=5):
   elif grid == 'Irish':
-    Delta_P = power_mismatch(data,avg_for_each_hour = False,dispatch=2,start_minute=0,end_minute=1/6,length_seconds_of_interval=5):
+    Delta_P = power_mismatch(data_filter(data,sigma = 6),avg_for_each_hour = False,dispatch=2,start_minute=0,end_minute=1/6,length_seconds_of_interval=5):
+    #we use a filter for the power mismatch of the Iroish data because of regular outliers (every 60 seconds)
   elif grid == 'Irish':
     Delta_P = 0
     trend = 0 # Represents a no-existing trend as there is no power dispatch schedule
