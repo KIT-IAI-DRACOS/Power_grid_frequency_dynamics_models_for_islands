@@ -17,6 +17,8 @@ from Functions import data_filter, integrate_omega, KM_Coeff_1, KM_Coeff_2, dail
 grids = ['Iceland','Irish','Balearic']
 models = ['model 1','model 2','model 3','model 4']
 
+freq_orig = data/(2*np.pi+50)
+increments_orig = Increments(data/(2*np.pi+50))
 
 '''For calculations: use angular velocity omega = 2*pi*frequency '''
 '''The bandwidth is chosen such that we receive a scmooth distribution'''
@@ -41,7 +43,7 @@ for grid in grids:
   omega_synth_model_1 = Euler_Maruyama(data,delta_t=0.1,t_final=5,model=1,c_1,c_2=0,Delta_P=0,epsilon,factor_daily_profile=0)
   
   synth_data_model_1(grid) = omega_synth_model_1
-  increments_model_1(grid) = Increments(omega_synth_model_1,...)
+  increments_model_1(grid) = Increments(omega_synth_model_1)
   autocor_model_1(grid) = autocor(omega_synth_model_1)
   
   '''Model 2...'''
@@ -71,7 +73,7 @@ for grid in grids:
   omega_synth_model_2 = Euler_Maruyama(data,delta_t=0.1,t_final=5,model=2,c_1,c_2,Delta_P,epsilon,factor_daily_profile=0)
   
   synth_data_model_2(grid) = omega_synth_model_2
-  increments_model_2(grid) = Increments(omega_synth_model_2,...)
+  increments_model_2(grid) = Increments(omega_synth_model_2)
   autocor_model_2(grid) = autocor(omega_synth_model_2)
 
    '''Model 3...'''
@@ -102,7 +104,7 @@ for grid in grids:
   omega_synth_model_3 = Euler_Maruyama(data,delta_t=0.1,t_final=5,model=3,c_1,c_2,Delta_P,epsilon,factor_daily_profile=0)
   
   synth_data_model_3(grid) = omega_synth_model_3
-  increments_model_3(grid) = Increments(omega_synth_model_3,...)
+  increments_model_3(grid) = Increments(omega_synth_model_3)
   autocor_model_3(grid) = autocor(omega_synth_model_3)
   
    '''Model 4...'''
@@ -132,7 +134,7 @@ for grid in grids:
   omega_synth_model_4 = Euler_Maruyama(data,delta_t=0.1,t_final=5,model=4,c_1,c_2,Delta_P,epsilon,factor_daily_profile)
   
   synth_data_model_4(grid) = omega_synth_model_4
-  increments_model_4(grid) = Increments(omega_synth_model_4,...)
+  increments_model_4(grid) = Increments(omega_synth_model_4)
   autocor_model_4(grid) = autocor(omega_synth_model_4)
 
   
