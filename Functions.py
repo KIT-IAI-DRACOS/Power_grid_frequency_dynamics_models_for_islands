@@ -19,8 +19,6 @@ from kramersmoyal import km
                      4: Calculation of c_2 from bivariate Fokker-Planck equation, linear c_1 and c_2, state-dependent noise   '''
 
 
-data = (freq+50)/(2*np.pi)
-
 '''Detrending of the time series:'''
 
 def data_filter(data,sigma = 60):
@@ -45,7 +43,7 @@ def integrate_omega(data,time_res=1,start_value = 0):
 '''1.Calculation the noise amplitude'''
 
 '''here: Use angular velocity (omega) instead of frequency(f)'''
-def KM_Coeff_2(data,dim = 1,time_res = 1,bandwidth=0.1,dist,multiplicative_noise = True) 
+def KM_Coeff_2(data, dim = 1, time_res = 1, bandwidth=0.1, dist, multiplicative_noise = True, start_value=0) 
   if dim = 1:
     powers = [0,1,2]
     bins = np.array([6000])
@@ -68,6 +66,7 @@ def KM_Coeff_2(data,dim = 1,time_res = 1,bandwidth=0.1,dist,multiplicative_noise
     '''Use dist as 2-dimensional array in this case: 1st entry: voltage angle, 2nd entry: angular velocity'''
     powers = np.array([[0,0],[1,0],[0,1],[1,1],[2,0],[0,2],[2,2]])
     bins = np.array([300,300])
+    data = np.array([data,integrate_omega(data,time_res=time_res,start_value = start_value)]) #use theta as integrated omega
     kmc, edges = km(data,powers = powers,bins = bins,bw=bandwidth)
     '''Attention: use here as data the detrended data (doriginal data minus filter'''
     zero_angle = np.argmin(edges[0]**2)
@@ -131,10 +130,10 @@ def KM_Coeff_1(data,dim= 1,time_res = 1,bandwidth=0.1,dist, order = 3):
     elif dim = 2:
       powers = np.array([[0,0],[1,0],[0,1],[1,1],[2,0],[0,2],[2,2]])
       bins = np.array([300,300])
-         data = ... #use theta as integrated omega
+      data = np.array([data,integrate_omega(data,time_res=time_res,start_value = start_value)]) #use theta as integrated omega
       kmc,edges = km(data,powers = powers,bins = bins,bw=bandwidth)
       def f_0_1(x,p_1,c_2):
-        return p_1*x[1] + c_2 *x[0]   #+p_3*x[1]**3 #+ p_2*x[1]**2
+        return p_1*x[1] + c_2 *x[0]  
       '''Define start and end'''
       #s1,e1,s2,e2 = 120,-120,5,-5
 
