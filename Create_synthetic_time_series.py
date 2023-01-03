@@ -116,7 +116,7 @@ for grid in grids:
     factor_daily_profile = 2.5 
   elif grid = 'Irish':
     dist_drift, dist_diff = 15,15
-    factor_daily_profile = 2.5 
+    factor_daily_profile = 3.5 
   elif grid = 'Iceland':
     dist_drift, dist_diff = 20,20
     factor_daily_profile = 0
