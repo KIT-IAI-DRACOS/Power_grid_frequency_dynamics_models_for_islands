@@ -30,7 +30,7 @@ autocor_model_1 = {}
 '''adapt the parameter estimation to the particulat grids'''
 for grid in grids:
   data = ...
-  data = data_cleaning(data)
+  data = data_cleaning(data,grid)
   bw_drift = 0.1
   bw_diff = 0.1
   dist_drift = 500
@@ -52,7 +52,7 @@ autocor_model_2 = {}
 for grid in grids:
   trend = 1 #trend is boolean
   data = ...
-  data = data_cleaning(data)
+  data = data_cleaning(data,grid)
   bw_drift = 0.1
   bw_diff = 0.1
   dist_drift = 500
@@ -82,7 +82,7 @@ autocor_model_3 = {}
 for grid in grids:
   trend = 1
   data = ...
-  data = data_cleaning(data)
+  data = data_cleaning(data,grid)
   bw_drift = 0.1
   bw_diff = 0.1
   dist_drift = 1200
@@ -113,7 +113,7 @@ autocor_model_4 = {}
 for grid in grids:
   trend = 1
   data = ...
-  data = data_cleaning(data)
+  data = data_cleaning(data,grid)
   bw_drift, bw_diff = 0.05, 0.05
   if grid = 'Balearic':
     dist_drift, dist_diff = 20,20
