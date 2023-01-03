@@ -154,18 +154,19 @@ def KM_Coeff_1(data,dim= 1,time_res = 1,bandwidth=0.1,dist, order = 3):
 
 
 
-'''Calculate daily profiles:'''
+'''Calculate daily profiles:'''   #take averge value at every full second for one day (3600*24 data points)
 def daily_profile(data,time_res = 1):
   '''time_res represents the time resolution of the data'''
-  daily_profile=np.zeros(int(24*3600/time_res))
+  daily_profile=np.zeros(int(24*3600))
   day_number = data.size//(int(24*3600/time_res))
   for i in range(daily_profile.size):
-    daily_profile[i] = np.mean([data[i+int(3600*24/time_res)*j]for j in range(day_number)])
+    daily_profile[i] = np.mean([data[int(int(i/time_res)+int(3600*24/time_res)*j)//(int(1/time_res))]for j in range(day_number)])
   return daily_profile
          
-def day_profile_pointwise(i,data,time_res = 1,delta_t = 1):
+def daily_profile_pointwise(i,data,time_res=1,delta_t = 1):
   daily_profile = daily_profile(data=data,time_res = time_res)
   d = daily_profile[(i%(int(3600*24/delta_t)))//(int(1/delta_t))]
+  return d
          
 
 '''3. Calculation of the power mismatch'''
