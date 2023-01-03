@@ -247,7 +247,7 @@ def exp_decay(data,time_res=1,size = 899):
 
 '''Euler-Maruyama'''
 
-def Euler_Maruyama(data,delta_t=0.1,t_final=5,model,c_1,c_2,Delta_P,epsilon,factor_daily_profile=0):
+def Euler_Maruyama(data,delta_t=0.1,t_final=5,model=3,c_1,c_2,Delta_P,epsilon,factor_daily_profile=0):
  
   t_steps = int(t_final/delta_t)
   time = np.linspace(0.0, t_final, t_steps)
@@ -308,14 +308,15 @@ def Euler_Maruyama(data,delta_t=0.1,t_final=5,model,c_1,c_2,Delta_P,epsilon,fact
       else:
          P_slow = 1
       Delta_P_fun[i] = 1* P_slow * Delta_P[(i//(int(4/dispatch)*900/delta_t))%(dispatch*24)]  +(1-P_slow[i])*  Delta_P_new[((i//(int(4/dispatch)*900/delta_t))-1)%(dispatch*24)]
-  
+    eilf model == 4:
+      Delta_P_fun = Delta_P 
   for i in range(1,time.size):
     theta[i] = theta[i-1] + delta_t * omega[i-1]
     omega[i] = omega[i-1] + delta_t * (  1 * c_1_weight[i-1] * c_1_fun(omega[i-1])
                                        - 1 * c_2_fun(omega[i-1]) * theta[i-1]   
                                        + 1*Delta_P_fun(i) )  + 1*epsilon_fun(omega[i-1])
   if model == 4:
-    omega = omega + factor_daily_profile*day_filter[(i%int(3600*24/delta_t))//int(1/delta_t)] #describe day_filter
+    omega = omega + factor_daily_profile * daily_profile_pointwise(i, data, time_res=time_res, delta_t = delta_t) #describe day_filter
   else:
     omega = omega
   return omega
