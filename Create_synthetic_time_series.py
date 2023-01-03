@@ -35,7 +35,7 @@ for grid in grids:
   
   c_1 = KM_Coeff_1(data,dim= 1,time_res = 1,bandwidth = bw_drift,dist = dist_drift, order = 1)
   epsilon = KM_Coeff_2(data,dim = 1,time_res = 1,bandwidth = bw_diff,dist = dist_diff,multiplicative_noise = False)
-  omega_synth_model_1 = Euler_Maruyama(...)
+  omega_synth_model_1 = Euler_Maruyama(data,delta_t=0.1,t_final=5,model=1,c_1,c_2=0,Delta_P=0,epsilon,factor_daily_profile=0)
   
   synth_data_model_1(grid) = omega_synth_model_1
   increments_model_1(grid) = Increments(omega_synth_model_1,...)
@@ -64,7 +64,7 @@ for grid in grids:
   c_1 = KM_Coeff_1(data - trend*data_filter(data),dim= 1,time_res = 1,bandwidth = bw_drift,dist = dist_drift, order = 1)
   c_2 = trend*exp_decay(data,time_res=1,size = 899)
   epsilon =   epsilon = KM_Coeff_2(data - trend*data_filter(data),dim = 1,time_res = 1,bandwidth = bw_diff,dist = dist_diff,multiplicative_noise = False)
-  omega_synth_model_2 = Euler_Maruyama(...)
+  omega_synth_model_2 = Euler_Maruyama(data,delta_t=0.1,t_final=5,model=2,c_1,c_2,Delta_P,epsilon,factor_daily_profile=0)
   
   synth_data_model_2(grid) = omega_synth_model_2
   increments_model_2(grid) = Increments(omega_synth_model_2,...)
@@ -95,7 +95,7 @@ for grid in grids:
   c_1 = KM_Coeff_1(data - trend * data_filter(data),dim= 1,time_res = 1,bandwidth = bw_drift,dist = dist_drift, order = 3)
   c_2 = trend * exp_decay(data,time_res=1,size = 899)
   epsilon =   epsilon = KM_Coeff_2(data - trend*data_filter(data), dim = 1, time_res = 1, bandwidth = bw_diff, dist = dist_diff, multiplicative_noise = True)
-  omega_synth_model_3 = Euler_Maruyama(...)
+  omega_synth_model_3 = Euler_Maruyama(data,delta_t=0.1,t_final=5,model=3,c_1,c_2,Delta_P,epsilon,factor_daily_profile=0)
   
   synth_data_model_3(grid) = omega_synth_model_3
   increments_model_3(grid) = Increments(omega_synth_model_3,...)
@@ -113,16 +113,19 @@ for grid in grids:
   bw_drift, bw_diff = 0.05, 0.05
   if grid = 'Balearic':
     dist_drift, dist_diff = 20,20
+    factor_daily_profile = 2.5 
   elif grid = 'Irish':
     dist_drift, dist_diff = 15,15
+    factor_daily_profile = 2.5 
   elif grid = 'Iceland':
     dist_drift, dist_diff = 20,20
+    factor_daily_profile = 0
     trend = 0
   c_1 = KM_Coeff_1(data - trend*data_filter(data),dim= 2,time_res = 1,bandwidth = bw_drift,dist = dist_drift, order = 1)[0]
   c_2 = KM_Coeff_1(data - trend*data_filter(data),dim= 2,time_res = 1,bandwidth = bw_drift,dist = dist_drift, order = 1)[1]
-  Delta_P = ...
+  Delta_P = 0 # Use multple ofdaily profile for describing the trend
   epsilon =   epsilon =  KM_Coeff_2(data - trend*data_filter(data), dim = 2, time_res = 1, bandwidth = bw_diff, dist = dist_diff, multiplicative_noise = True)
-  omega_synth_model_4 = Euler_Maruyama(...)
+  omega_synth_model_4 = Euler_Maruyama(data,delta_t=0.1,t_final=5,model=4,c_1,c_2,Delta_P,epsilon,factor_daily_profile)
   
   synth_data_model_4(grid) = omega_synth_model_4
   increments_model_4(grid) = Increments(omega_synth_model_4,...)
