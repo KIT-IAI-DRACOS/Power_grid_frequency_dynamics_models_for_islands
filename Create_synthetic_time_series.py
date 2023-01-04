@@ -23,6 +23,12 @@ increments_orig = Increments(data/(2*np.pi+50))
 '''For calculations: use angular velocity omega = 2*pi*frequency '''
 '''The bandwidth is chosen such that we receive a scmooth distribution'''
 
+'''Choose the grid '''
+raw=pd.read_csv('Data/Frequency_data_Balearic.csv', sep=',')
+freq = raw[['Frequency']]/1000 +50
+print(freq)
+data = (freq-50)/(2*np.pi)
+print(data)
 
 
 '''Model 1...'''
