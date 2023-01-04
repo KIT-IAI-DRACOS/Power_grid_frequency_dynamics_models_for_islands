@@ -26,9 +26,8 @@ increments_orig = Increments(data/(2*np.pi+50))
 '''Choose the grid '''
 raw=pd.read_csv('Data/Frequency_data_Balearic.csv', sep=',')
 freq = raw[['Frequency']]/1000 +50
-print(freq)
-data = (freq-50)/(2*np.pi)
-print(data)
+data = (freq-50)/(2*np.pi)   #Use the angular velocity for the calcualltions
+
 
 
 '''Model 1...'''
@@ -37,7 +36,6 @@ increments_model_1 = {}
 autocor_model_1 = {}
 '''adapt the parameter estimation to the particulat grids'''
 for grid in grids:
-  data = ...
   data = data_cleaning(data,grid)
   bw_drift = 0.1
   bw_diff = 0.1
@@ -60,7 +58,6 @@ autocor_model_2 = {}
 '''adapt the parameter estimation to the particulat grids'''
 for grid in grids:
   trend = 1 #trend is boolean
-  data = ...
   data = data_cleaning(data,grid)
   bw_drift = 0.1
   bw_diff = 0.1
@@ -91,7 +88,6 @@ autocor_model_3 = {}
 '''adapt the parameter estimation to the particulat grids'''
 for grid in grids:
   trend = 1
-  data = ...
   data = data_cleaning(data,grid)
   bw_drift = 0.1
   bw_diff = 0.1
@@ -123,7 +119,6 @@ autocor_model_4 = {}
 '''adapt the parameter estimation to the particulat grids'''
 for grid in grids:
   trend = 1
-  data = ...
   data = data_cleaning(data,grid)
   bw_drift, bw_diff = 0.05, 0.05
   if grid = 'Balearic':
