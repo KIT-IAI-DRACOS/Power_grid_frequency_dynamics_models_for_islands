@@ -1,9 +1,4 @@
 import numpy as np
-import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sns
-import scipy.stats
-
 
 def true_intervals(bool_arr):
     """ Get intervals where bool_arr is true"""
