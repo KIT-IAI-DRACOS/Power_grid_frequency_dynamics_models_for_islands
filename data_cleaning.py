@@ -9,7 +9,7 @@ from scipy.stats import entropy
 
 from Data import data 
 
-from Help_functions import *
+from Help_functions import extreme_points, isolated_peaks, const_windows, nan_windows
 
 
 def data_cleaning(data , grid):
