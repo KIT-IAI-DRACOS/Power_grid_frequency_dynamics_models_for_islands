@@ -14,7 +14,6 @@ from Help_functions import *
 
 def data_cleaning(data , grid):
     # %%  Set parameters for identifying corrupted data
-
     # Nan-points to fill
     N_f = 20
     # Maximum length of allowed constant windows
