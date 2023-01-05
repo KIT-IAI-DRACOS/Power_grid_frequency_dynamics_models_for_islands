@@ -30,8 +30,8 @@ def data_cleaning(data , grid):
     #frame = pd.read_csv(input_dir, index_col=0, usecols=[0, 1], names=['time', 'frequency'],
                         header=None, squeeze=True, parse_dates=[0])
     #data = data.append(frame)
-    data = data.multiply(0.001).add(50)
-    data = data.round(4)
+    #data = data.multiply(0.001).add(50)
+    #data = data.round(4)
     df = data.diff()
 
     # Find positions and numbers of corrupted data #
