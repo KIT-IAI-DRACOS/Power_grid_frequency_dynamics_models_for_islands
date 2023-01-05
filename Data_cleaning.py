@@ -64,7 +64,7 @@ def data_cleaning(data , grid):
     print('Clean corrupted data ...')
     data_cl = data_m.fillna(method='ffill', limit=N_f)
 
-    data_cl = data_cl.subtract(50.000).multiply(1000.000)
+    #data_cl = data_cl.subtract(50.000).multiply(1000.000)
 
     # Save cleansed data (including the remaining NaN-values) #
 
