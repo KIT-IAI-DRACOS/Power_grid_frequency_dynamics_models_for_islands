@@ -20,11 +20,11 @@ two additional packages are needed. Firstly, one for estimating the Kramer–Moy
 pip install kramersmoyal
 ```
 
-Secondly, `cartopy` is needed to produce the map in figure 1 (`ffigure_1.py`). This package can prove difficult to install, does we do not recommend the user to install it as long as reproducing the map is strictly needed.
+Secondly, `cartopy` is needed to produce the map in figure 1 (`figure_1.py`). This package can prove difficult to install, does we do not recommend the user to install it as long as reproducing the map is strictly needed.
 
 ## Data
 
-The original Data can be found in:
+The original Data can be found in the folder "Data".
 
 With the plots come a few additional data sources that have generated the figures and avoid long computational times.
 
