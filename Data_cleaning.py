@@ -1,18 +1,15 @@
-import pandas as pd
 import numpy as np
-import scipy as sc
-import matplotlib.pyplot as plt
 
-#!pip install kramersmoyal
-from sklearn.neighbors import KernelDensity
-from scipy.stats import entropy
 
-from Data import data 
+
+
+
+
 
 from Help_functions import extreme_points, isolated_peaks, const_windows, nan_windows
 
 
-def data_cleaning(data , grid):
+def data_cleaning(data ):
     # %%  Set parameters for identifying corrupted data
     # Nan-points to fill
     N_f = 20
@@ -28,7 +25,7 @@ def data_cleaning(data , grid):
 
     #data = pd.Series(dtype='float64')
     #frame = pd.read_csv(input_dir, index_col=0, usecols=[0, 1], names=['time', 'frequency'],
-                        header=None, squeeze=True, parse_dates=[0])
+    #                    header=None, squeeze=True, parse_dates=[0])
     #data = data.append(frame)
     #data = data.multiply(0.001).add(50)
     #data = data.round(4)
@@ -73,9 +70,3 @@ def data_cleaning(data , grid):
     #               compression={'method': 'zip', 'archive_name': 'Ireland_cleaned.csv'}, header=False)
     
     return data_cl
-
-
-
-
-
-
