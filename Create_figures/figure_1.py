@@ -1,4 +1,4 @@
-# %% Created by Leonardo Rydin Gorjão, Ulrich Jakob Oberhofer, and Benjamin
+# %% Created by Leonardo Rydin Gorjão, Ulrich Oberhofer, and Benjamin
 # Schäfer. Most python libraries are standard (e.g. via Anaconda). If TeX is not
 # present in your system, comment out lines 16 to 19. Note that cartopy is
 # sometimes difficult to install on Windows/iOS systems.
