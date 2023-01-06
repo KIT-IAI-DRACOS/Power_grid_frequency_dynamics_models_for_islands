@@ -1,4 +1,4 @@
-# %% Created by Leonardo Rydin Gorjão, Ulrich Jakob Oberhofer, and Benjamin
+# %% Created by Leonardo Rydin Gorjão, Ulrich Oberhofer, and Benjamin
 # Schäfer. Most python libraries are standard (e.g. via Anaconda). If TeX is not
 # present in your system, comment out lines 9 to 12.
 
