@@ -27,8 +27,8 @@ models = ['model 1','model 2','model 3','model 4']
 
 '''Data analysis of the original time series'''
 data_orig          = {i:[]for i in grids}
-increments_model_1 = {i:[]for i in grids}
-autocor_model_1    = {i:[]for i in grids}
+increments_orig = {i:[]for i in grids}
+autocor_orig    = {i:[]for i in grids}
 
 for grid in grids:
   '''Choose the grid '''
@@ -160,47 +160,47 @@ for grid in ['Irish']:#grids:
   
    
 '''Model 4...'''
+'''Model 4...'''
 synth_data_model_4 = {i:[]for i in grids}
 increments_model_4 = {i:[]for i in grids}
 autocor_model_4 = {i:[]for i in grids}
 '''adapt the parameter estimation to the particulat grids'''
 for grid in grids:
+  
+  '''Choose the grid '''
+  raw=pd.read_csv('Data/Frequency_data_%s.csv'%(grid), sep=',')
+  freq = (raw[['Frequency']]/1000 +50).squeeze()
+  freq = data_cleaning(freq)
+  data = (freq-50)*(2*np.pi)   #Use the angular velocity for the calcualltions
+  
+  trend = 1
+  bw_drift, bw_diff = 0.05, 0.05
+  if grid == 'Balearic':
+    dist_theta, dist_omega = 20,20
+    prim_control_lim, prim_weight = 0.13*2*np.pi, 3
+    factor_daily_profile = 2.5 
+  elif grid == 'Irish':
+    dist_theta, dist_omega = 15,15
+    prim_control_lim, prim_weight = 0.13*2*np.pi, 3
+    factor_daily_profile = 3.5 
+  elif grid == 'Iceland':
+    dist_theta, dist_omega = 30,70    # choose larger intervals as the deviations in the grid are larger
+    prim_control_lim, prim_weight = 0, 1
+    factor_daily_profile = 0
+    trend = 0
+  c_1 = KM_Coeff_1(data - trend*data_filter(data),dim= 2,time_res = 1,bandwidth = bw_drift,dist = [dist_theta, dist_omega], order = 1)[0]
+  c_2 = KM_Coeff_1(data - trend*data_filter(data),dim= 2,time_res = 1,bandwidth = bw_drift,dist = [dist_theta, dist_omega], order = 1)[1]
+  Delta_P = 0 # Use multple ofdaily profile for describing the trend
+  '''Rename dist_drift and dist_diff here!'''
+  epsilon =   epsilon =  KM_Coeff_2(data - trend*data_filter(data), dim = 2, time_res = 1, bandwidth = bw_diff, dist = [dist_theta, dist_omega], multiplicative_noise = True)
+  delta_t = 1
+  omega_synth_model_4 = Euler_Maruyama(data,c_1=c_1,c_2_decay=c_2,Delta_P = Delta_P,epsilon=epsilon,time_res = 1,dispatch = 0,delta_t=delta_t,t_final=5,model=4,factor_daily_profile=factor_daily_profile,prim_control_lim = prim_control_lim, prim_weight = prim_weight)
 
-'''Choose the grid '''
-raw=pd.read_csv('Data/Frequency_data_%s.csv'%(grid), sep=',')
-freq = (raw[['Frequency']]/1000 +50).squeeze()
-freq = data_cleaning(freq)
-data = (freq-50)*(2*np.pi)   #Use the angular velocity for the calcualltions
+  freq_synth_model_4 = omega_synth_model_4/(2*np.pi) + 50
 
-trend = 1
-bw_drift, bw_diff = 0.05, 0.05
-if grid == 'Balearic':
-  dist_drift, dist_diff = 20,20
-  prim_control_lim, prim_weight = 0.13*2*np.pi, 3
-  factor_daily_profile = 2.5 
-elif grid == 'Irish':
-  dist_drift, dist_diff = 15,15
-  prim_control_lim, prim_weight = 0.13*2*np.pi, 3
-  factor_daily_profile = 3.5 
-elif grid == 'Iceland':
-  dist_drift, dist_diff = 20,20
-  prim_control_lim, prim_weight = 0, 1
-  factor_daily_profile = 0
-  trend = 0
-c_1 = KM_Coeff_1(data - trend*data_filter(data),dim= 2,time_res = 1,bandwidth = bw_drift,dist = [dist_drift,dist_diff], order = 1)[0]
-c_2 = KM_Coeff_1(data - trend*data_filter(data),dim= 2,time_res = 1,bandwidth = bw_drift,dist = [dist_drift,dist_diff], order = 1)[1]
-Delta_P = 0 # Use multple ofdaily profile for describing the trend
-'''Rename dist_drift and dist_diff here!'''
-epsilon =   epsilon =  KM_Coeff_2(data - trend*data_filter(data), dim = 2, time_res = 1, bandwidth = bw_diff, dist = [dist_drift,dist_diff], multiplicative_noise = True)
-delta_t = 1
-omega_synth_model_4 = Euler_Maruyama(data,c_1=c_1,c_2_decay=c_2,Delta_P = Delta_P,epsilon=epsilon,time_res = 1,dispatch = 0,delta_t=delta_t,t_final=5,model=4,factor_daily_profile=factor_daily_profile,prim_control_lim = prim_control_lim, prim_weight = prim_weight)
-
-freq_synth_model_4 = omega_synth_model_4/(2*np.pi) + 50
-
-synth_data_model_4[grid].append(freq_synth_model_4)
-increments_model_4[grid].append(Increments(freq_synth_model_4,time_res = delta_t,step = 1))
-autocor_model_4[grid].append(autocor(freq_synth_model_4,time_res = delta_t))
-
+  synth_data_model_4[grid].append(freq_synth_model_4)
+  increments_model_4[grid].append(Increments(freq_synth_model_4,time_res = delta_t,step = 1))
+  autocor_model_4[grid].append(autocor(freq_synth_model_4,time_res = delta_t))
   
 
 
