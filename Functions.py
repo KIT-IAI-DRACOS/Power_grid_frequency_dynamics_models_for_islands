@@ -252,7 +252,7 @@ def Euler_Maruyama(data,c_1,c_2_decay,Delta_P,epsilon,time_res = 1,dispatch = 1,
     if model == 1:
         for i in range(1,time.size):
             theta[i] = theta[i-1] + delta_t * omega[i-1]
-            omega[i] = omega[i-1] + delta_t *   c_1*omega[i-1]   + 1*epsilon * omega[i-1] *dW[i]
+            omega[i] = omega[i-1] + delta_t * c_1*omega[i-1]   + 1*epsilon *dW[i]
     elif model == 2:
         P = np.ones(time.size)
         sign_P = np.zeros(time.size)
@@ -377,7 +377,7 @@ def Increments(data,time_res = 1,step = 1):
   Inc = np.zeros(int(data.size*time_res/(step))-1)
   for i in range(Inc.size):
     Inc[i] = data[int((i+1)*step/time_res)] - data[int((i)*step/time_res)]
-    return Inc
+  return Inc
     
 '''Define autocorrelation function'''
 def autocor(data,count=6*90,steps=10,time_res = 1):
