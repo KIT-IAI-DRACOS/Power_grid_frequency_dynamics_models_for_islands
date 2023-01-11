@@ -25,18 +25,25 @@ models = ['model 1','model 2','model 3','model 4']
 
 '''Choose the grid '''
 
+
+
 '''Data analysis of the original time series'''
 data_orig          = {i:[]for i in grids}
 increments_orig = {i:[]for i in grids}
 autocor_orig    = {i:[]for i in grids}
 
 for grid in grids:
+  time_res = 1
   '''Choose the grid '''
   raw=pd.read_csv('Data/Frequency_data_%s.csv'%(grid), sep=',')
   freq = (raw[['Frequency']]/1000 +50).squeeze()
   freq = data_cleaning(freq)
-  data = (freq-50)*(2*np.pi)   #Use the angular velocity for the calcualltions
 
+  
+  data_orig[grid].append(freq)
+  increments_orig[grid].append(Increments(freq,time_res = time_res,step = 1))
+  autocor_orig[grid].append(autocor(freq,steps = 10, time_res = time_res))
+  
 '''Model 1...'''
 time_res = 1
 synth_data_model_1 = {i:[]for i in grids}
@@ -48,11 +55,8 @@ for grid in grids:
   raw=pd.read_csv('Data/Frequency_data_%s.csv'%(grid), sep=',')
   freq = (raw[['Frequency']]/1000 +50).squeeze()
   freq = data_cleaning(freq)
+  data = (freq-50)*(2*np.pi)   #Use the angular velocity for the calcualltions
 
-  data_orig[grid].append(freq)
-  increments_orig[grid].append(Increments(freq,time_res = time_res,step = 1))
-  autocor_orig[grid].append(autocor(freq_synth_model_1,steps = 10, time_res = time_res))
-  
   
   bw_drift = 0.1
   bw_diff = 0.1
