@@ -1,15 +1,7 @@
 #!pip install kramersmoyal
 import pandas as pd
 import numpy as np
-import scipy as sc
-import matplotlib.pyplot as plt
-from scipy.optimize import curve_fit
-from scipy.ndimage.filters import gaussian_filter1d
-#from scipy.ndimage import uniform_filter1d
-import sdeint
 
-from kramersmoyal import km
-from scipy.stats import entropy
 
 from Data_cleaning import data_cleaning
 from Functions import data_filter, integrate_omega, KM_Coeff_1, KM_Coeff_2, daily_profile, power_mismatch, exp_decay, Euler_Maruyama, Increments, autocor 
@@ -24,8 +16,6 @@ models = ['model 1','model 2','model 3','model 4']
 '''The bandwidth is chosen such that we receive a scmooth distribution'''
 
 '''Choose the grid '''
-
-
 
 '''Data analysis of the original time series'''
 data_orig          = {i:[]for i in grids}
@@ -45,13 +35,12 @@ for grid in grids:
   autocor_orig[grid].append(autocor(freq,steps = 10, time_res = time_res))
   
 '''Model 1...'''
-time_res = 1
 synth_data_model_1 = {i:[]for i in grids}
 increments_model_1 = {i:[]for i in grids}
 autocor_model_1 = {i:[]for i in grids}
 '''adapt the parameter estimation to the particulat grids'''
+
 for grid in grids:
-  '''Choose the grid '''
   raw=pd.read_csv('Data/Frequency_data_%s.csv'%(grid), sep=',')
   freq = (raw[['Frequency']]/1000 +50).squeeze()
   freq = data_cleaning(freq)
@@ -60,7 +49,7 @@ for grid in grids:
   
   bw_drift = 0.1
   bw_diff = 0.1
-  dist_drift = 500
+  dist_drift = 800 #for small amount of data choose a larger value for dist_drift
   dist_diff = 500
   
   c_1 = KM_Coeff_1(data,dim= 1,time_res = 1,bandwidth = bw_drift,dist = dist_drift, order = 1)
@@ -74,7 +63,8 @@ for grid in grids:
   increments_model_1[grid].append(Increments(freq_synth_model_1,time_res = delta_t,step = 1))
   autocor_model_1[grid].append(autocor(freq_synth_model_1,steps = 10, time_res = delta_t))
   
- 
+  
+  
 '''Model 2...'''
 synth_data_model_2 = {i:[]for i in grids}
 increments_model_2 = {i:[]for i in grids}
@@ -82,7 +72,6 @@ autocor_model_2 = {i:[]for i in grids}
 '''adapt the parameter estimation to the particulat grids'''
 for grid in grids:
     
-  '''Choose the grid '''
   raw=pd.read_csv('Data/Frequency_data_%s.csv'%(grid), sep=',')
   freq = (raw[['Frequency']]/1000 +50).squeeze()
   freq = data_cleaning(freq)
@@ -116,16 +105,14 @@ for grid in grids:
   synth_data_model_2[grid].append(freq_synth_model_2)
   increments_model_2[grid].append(Increments(freq_synth_model_2,time_res = delta_t,step = 1))
   autocor_model_2[grid].append(autocor(freq_synth_model_2,time_res = delta_t))
-# 
 
 '''Model 3...'''
 synth_data_model_3 = {i:[]for i in grids}
 increments_model_3 = {i:[]for i in grids}
 autocor_model_3 = {i:[]for i in grids}
 '''adapt the parameter estimation to the particulat grids'''
-for grid in ['Irish']:#grids:
+for grid in grids:
 
-  '''Choose the grid '''
   raw=pd.read_csv('Data/Frequency_data_%s.csv'%(grid), sep=',')
   freq = (raw[['Frequency']]/1000 +50).squeeze()
   freq = data_cleaning(freq)
@@ -170,8 +157,6 @@ increments_model_4 = {i:[]for i in grids}
 autocor_model_4 = {i:[]for i in grids}
 '''adapt the parameter estimation to the particulat grids'''
 for grid in grids:
-  
-  '''Choose the grid '''
   raw=pd.read_csv('Data/Frequency_data_%s.csv'%(grid), sep=',')
   freq = (raw[['Frequency']]/1000 +50).squeeze()
   freq = data_cleaning(freq)
@@ -194,8 +179,8 @@ for grid in grids:
     trend = 0
   c_1 = KM_Coeff_1(data - trend*data_filter(data),dim= 2,time_res = 1,bandwidth = bw_drift,dist = [dist_theta, dist_omega], order = 1)[0]
   c_2 = KM_Coeff_1(data - trend*data_filter(data),dim= 2,time_res = 1,bandwidth = bw_drift,dist = [dist_theta, dist_omega], order = 1)[1]
-  Delta_P = 0 # Use multple ofdaily profile for describing the trend
-  '''Rename dist_drift and dist_diff here!'''
+  Delta_P = 0 
+ 
   epsilon =   epsilon =  KM_Coeff_2(data - trend*data_filter(data), dim = 2, time_res = 1, bandwidth = bw_diff, dist = [dist_theta, dist_omega], multiplicative_noise = True)
   delta_t = 1
   omega_synth_model_4 = Euler_Maruyama(data,c_1=c_1,c_2_decay=c_2,Delta_P = Delta_P,epsilon=epsilon,time_res = 1,dispatch = 0,delta_t=delta_t,t_final=5,model=4,factor_daily_profile=factor_daily_profile,prim_control_lim = prim_control_lim, prim_weight = prim_weight)
@@ -209,11 +194,10 @@ for grid in grids:
 
 
 for grid in grids:
-  np.savez_compressed("%s_data"%(grid),freq_orig = data_orig[grid]/(2*np.pi+50), freq_model_1 = synth_data_model_4[grid], 
-                      freq_model_2 = synth_data_model_2[grid], freq_model_3 = synth_data_model_3[grid], freq_model_4 = synth_data_model_4[grid], 
-                      incr_orig = increments_orig[grid], incr_model_1 = increments_model_1[grid], incr_model_2 = increments_model_2[grid], 
-                      incr_model_3 = increments_model_3[grid], incr_model_4 = increments_model_4[grid],  autocor_orig_90min = autocor_orig[grid], 
-                      autocor_model_1_90min = autocor_model_1[grid], autocor_model_2_90min = autocor_model_2[grid], 
-                      autocor_model_3_90min = autocor_model_3[grid], autocor_model_4_90min = autocor_model_4[grid])
-
+    np.savez_compressed('%s_data'%(grid),freq_orig = np.asarray(data_orig[grid]), freq_model_1 = np.asarray(synth_data_model_1[grid]), 
+                      freq_model_2 = np.asarray(synth_data_model_2[grid]), freq_model_3 = np.asarray(synth_data_model_3[grid]), freq_model_4 = np.asarray(synth_data_model_4[grid]), 
+                      incr_orig = np.asarray(increments_orig[grid]), incr_model_1 = np.asarray(increments_model_1[grid]), incr_model_2 = np.asarray(increments_model_2[grid]), 
+                      incr_model_3 = np.asarray(increments_model_3[grid]), incr_model_4 = np.asarray(increments_model_4[grid]),  autocor_orig_90min = np.asarray(autocor_orig[grid]), 
+                      autocor_model_1_90min = np.asarray(autocor_model_1[grid]), autocor_model_2_90min = np.asarray(autocor_model_2[grid]), 
+                      autocor_model_3_90min = np.asarray(autocor_model_3[grid]), autocor_model_4_90min = np.asarray(autocor_model_4[grid]))
 
