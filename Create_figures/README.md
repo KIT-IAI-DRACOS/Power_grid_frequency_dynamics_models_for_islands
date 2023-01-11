@@ -1,5 +1,6 @@
-# Phase-and-amplitude-synchronisation-in-power-grid-frequency-fluctuations-in-the-Nordic-Grid
-Python code to reproduced the figures in the scientific publication "Fokker–Planck modelling for power-grid frequency on islands",
+
+Python code to reproduced the figures in the scientific publication "Non-linear, bivariate stochastic modelling of
+power-grid frequency applied to islands",
 [//]: # submitted to [IEEE Access](https://doi.org/10.1109/ACCESS.2022.3150338)
 
 ## Python packages
@@ -20,7 +21,7 @@ two additional packages are needed. Firstly, one for estimating the Kramer–Moy
 pip install kramersmoyal
 ```
 
-Secondly, `cartopy` is needed to produce the map in figure 1 (`figure_1.py`). This package can prove difficult to install, does we do not recommend the user to install it as long as reproducing the map is strictly needed.
+Secondly, `cartopy` is needed to produce the map in figure 1 (`https://github.com/KIT-IAI-DRACOS/Stochastic-modelling-of-power-grid-frequency-applied-to-islands/blob/main/Create_figures/figure_1.py`). This package can prove difficult to install, does we do not recommend the user to install it as long as reproducing the map is strictly needed.
 
 ## Data
 
