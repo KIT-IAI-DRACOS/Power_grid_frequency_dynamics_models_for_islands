@@ -1,7 +1,7 @@
 
 Python code to reproduced the figures in the scientific publication "Non-linear, bivariate stochastic modelling of
-power-grid frequency applied to islands",
-[//]: # submitted to [IEEE Access](https://doi.org/10.1109/ACCESS.2022.3150338)
+power-grid frequency applied to islands"
+//: # submitted to [IEEE Access](https://doi.org/10.1109/ACCESS.2022.3150338)
 
 ## Python packages
 In the following follow various python scripts to obtain the figures in the scientific publication. They requires a set of python packages, which are listed below, and can easily be installed using `pip`.
