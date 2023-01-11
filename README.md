@@ -1,2 +1,3 @@
-# Power_grid_frequency_dynamics_models_for_islands
-Fokker–Planck modelling of power-grid frequency on islands
+This code can be used to recreate the models from the paper "Non-linear, bivariate stochastic modelling of
+power-grid frequency applied to islands".
+
