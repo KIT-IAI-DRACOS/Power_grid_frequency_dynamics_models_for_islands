@@ -21,7 +21,7 @@ two additional packages are needed. Firstly, one for estimating the Kramer–Moy
 pip install kramersmoyal
 ```
 
-Secondly, `cartopy` is needed to produce the map in figure 1 [figure_1](`https://github.com/KIT-IAI-DRACOS/Stochastic-modelling-of-power-grid-frequency-applied-to-islands/blob/main/Create_figures/figure_1.py`). This package can prove difficult to install, does we do not recommend the user to install it as long as reproducing the map is strictly needed.
+Secondly, `cartopy` is needed to produce the map in figure 1. This package can prove difficult to install, does we do not recommend the user to install it as long as reproducing the map is strictly needed.
 
 ## Data
 
