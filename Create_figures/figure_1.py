@@ -19,7 +19,7 @@ matplotlib.rcParams.update({'font.family': 'serif', 'font.size': 20,
 matplotlib.rcParams['text.usetex'] = True
 from matplotlib.lines import Line2D
 
-data_sources = ['Iceland.npz', 'Ireland.npz', 'Balearic.npz']
+data_sources = ['Iceland_data.npz', 'Irish_data.npz', 'Balearic_data.npz']
 colours = ['#D81B60','#1E88E5','#FFC107','#004D40']
 labels = [r'\textbf{Iceland}', r'\textbf{Ireland}', r'\textbf{Balearic}']
 
