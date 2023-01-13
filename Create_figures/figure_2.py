@@ -19,23 +19,27 @@ labels = ['Empirical','Model 1','Model 2','Model 3','Model 4']
 ls = ['--','-','-','-','-']
 
 # %%
-data = np.load('fig2_Ireland.npz')
+'''Select the grid'''
+#grid = 'Iceland' 
+grid = 'Irish' 
+#grid = 'Balearic' 
+data_sources = ['Iceland_kmc.npz', 'Irish_kmc.npz', 'Balearic_kmc.npz']
+data = np.load('%s_kmc.npz'%(grid))
 
-c_1_model1 = data['c_1_model1'].flatten()[0]
-c_1_model2 = data['c_1_model2'].flatten()[0]
+c_1_model1 = data['c_1_model1'].flatten()
+c_1_model2 = data['c_1_model2'].flatten()
 
-drift = data['drift_1d'][0]
-diffusion = data['diffusion_1d'][0]
-edges_1d = data['edges_1d'][0]
+drift = data['drift_1d']
+diffusion = data['diffusion_1d']
+edges_1d = data['edges_1d']
+p_1 = data['p_1_model3'].flatten()
+p_3 = data['p_3_model3'].flatten()
 
-p_1 = data['p_1_model3'].flatten()[0]
-p_3 = data['p_3_model3'].flatten()[0]
+d_0 = data['d_0_model3'].flatten()
+d_2 = data['d_2_model3'].flatten()
 
-d_0 = data['d_0_model3'].flatten()[0]
-d_2 = data['d_2_model3'].flatten()[0]
-
-epsilon_model1 = data['epsilon_model1'].flatten()[0]
-epsilon_model2 = data['epsilon_model2'].flatten()[0]
+epsilon_model1 = data['epsilon_model1'].flatten()
+epsilon_model2 = data['epsilon_model2'].flatten()
 
 edges_2d = data['edges_2d']
 kmc_2d = data['kmc_2d']
@@ -47,12 +51,12 @@ l_, r_ = 500, -500
 
 x = edges_1d[l_:r_]
 ax[0].plot(x, drift[l_:r_], label=labels[0], color=colours[0], lw=2, ls=ls[0])
-ax[0].plot(x, -x*c_1_model1, label=labels[1], color=colours[1], lw=2, ls=ls[1])
-ax[0].plot(x, -x*c_1_model2, label=labels[2], color=colours[2], lw=2, ls=ls[2])
+ax[0].plot(x, x*c_1_model1, label=labels[1], color=colours[1], lw=2, ls=ls[1])
+ax[0].plot(x, x*c_1_model2, label=labels[2], color=colours[2], lw=2, ls=ls[2])
 ax[0].plot(x, p_3*x**3+p_1*x, label=labels[3], color=colours[3], lw=2, ls=ls[3])
 
 ax[0].set_ylim([-0.03,0.03])
-ax[0].set_xlim([-0.5,0.5])
+ax[0].set_xlim([-0.8,0.8])
 
 ax[0].set_ylabel(r'Drift $D_1(\omega)$', labelpad=0)
 ax[0].set_xticklabels([])
@@ -129,7 +133,7 @@ ax2.zaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
 fig.text(.41,.06,r'$\times10^{-2}$', fontsize=16, rotation=30)
 fig.text(.91,.06,r'$\times10^{-2}$', fontsize=16, rotation=30)
 fig.text(.91,.28,r'$\times10^{-4}$', fontsize=16)
-fig.text(.41,.28,r'$\times10^{-2}$', fontsize=16)
+fig.text(.41,.28,r'$\times10^{-3}$', fontsize=16)
 
 fig.text(0.02,0.1, r'Drift $D_{0,1}(\theta,\omega)$',
     fontsize=18, rotation=90)
@@ -142,4 +146,4 @@ ax2.view_init(30, -45)
 ax[0].legend(handlelength=1, handletextpad=.5, ncol=4, columnspacing=1, loc=1,
     bbox_to_anchor=(1.0,1.29))
 fig.subplots_adjust(left=.15, bottom=.12, right=.99, top=.93, hspace=.03)
-fig.savefig('figs/fig2.pdf', dpi=200, transparent=True)
+#fig.savefig('figs/fig2.pdf', dpi=200, transparent=True)
