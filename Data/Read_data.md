@@ -1,3 +1,3 @@
-The uploeaded data consist of three days of the frequency data of the Irish grid.
+The uploeaded data consist of three days of frequency data of the Irish grid, the Balearic grid and Iceland.
 
-To receive the complete data set or for questions regarding the code, please write a mail to ulrich.oberhofer@kit.edu'''
+In order to receive the complete data set or for questions regarding the code, please write a mail to ulrich.oberhofer@kit.edu'''
