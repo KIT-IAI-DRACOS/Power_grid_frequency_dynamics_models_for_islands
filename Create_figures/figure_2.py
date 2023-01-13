@@ -146,4 +146,4 @@ ax2.view_init(30, -45)
 ax[0].legend(handlelength=1, handletextpad=.5, ncol=4, columnspacing=1, loc=1,
     bbox_to_anchor=(1.0,1.29))
 fig.subplots_adjust(left=.15, bottom=.12, right=.99, top=.93, hspace=.03)
-#fig.savefig('figs/fig2.pdf', dpi=200, transparent=True)
+fig.savefig('figs/fig2.pdf', dpi=200, transparent=True)
