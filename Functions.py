@@ -30,7 +30,7 @@ def data_filter(data,sigma = 60):
 
 '''Integration of the angular velocity for calcualtion of theta (voltage angle)'''
 '''Integrate the omegas by using a sum'''
-def integrate_omega(data,time_res=1,start_value = 0):
+def integrate_omega(data,time_res=1, start_value = 0):
   theta = np.zeros(data.size)
   theta[start_value] = data[start_value]
   for i in range(start_value + 1,data.size - start_value):
@@ -53,16 +53,14 @@ def KM_Coeff_2(data, dim = 1, time_res = 1, bandwidth=0.1, dist = 500, multiplic
     if multiplicative_noise == False:
       epsilon = np.sqrt(2*np.mean(kmc[2,zero_frequency-dist:zero_frequency+dist]))
     elif multiplicative_noise == True:
-      peak = zero_frequency-500+np.argmin(kmc[2,zero_frequency-500:zero_frequency+500])
-      np.argmin(kmc[2,zero_frequency-500:zero_frequency+500]**2),zero_frequency,zero_frequency-500+np.argmin(kmc[2,zero_frequency-500:zero_frequency+500])
+      peak = zero_frequency-dist+np.argmin(kmc[2,zero_frequency-dist:zero_frequency+dist])
+      np.argmin(kmc[2,zero_frequency-dist:zero_frequency+dist]**2),zero_frequency,zero_frequency-dist+np.argmin(kmc[2,zero_frequency-dist:zero_frequency+dist])
       d_2 = curve_fit(lambda t , a  : a*(t-0)**2 + kmc[2,zero_frequency],edges[ 0 ][zero_frequency-dist:zero_frequency+dist],kmc[2,peak-dist:peak+dist])[0]
       diff_zero=kmc[2,peak]
       d_0=diff_zero
       epsilon = (d_2,d_0)
     return epsilon
-    
-    
-   
+      
   elif dim == 2:
     '''Use dist as 2-dimensional array in this case: 1st entry: voltage angle, 2nd entry: angular velocity'''
     powers = np.array([[0,0],[1,0],[0,1],[1,1],[2,0],[0,2],[2,2]])
@@ -78,7 +76,7 @@ def KM_Coeff_2(data, dim = 1, time_res = 1, bandwidth=0.1, dist = 500, multiplic
       
     elif multiplicative_noise == True:
       def f_0_2(x, a, b):
-          return 0*(x[0])+a*(x[1])**2 + b   #!!!
+          return a*(x[1])**2 + b   #!!!
    
 
       side_x = edges[0][zero_angle-dist[0]:zero_angle+dist[0]]
@@ -132,7 +130,7 @@ def KM_Coeff_1(data,dim= 1,time_res = 1,bandwidth=0.1,dist = 500, order = 1, sta
         x1_1d = X1.reshape((1, np.prod(size)))
         x2_1d = X2.reshape((1, np.prod(size)))
         xdata = np.vstack((x1_1d, x2_1d))
-        z=(np.array([[kmc[5,zero_angle-dist[0]+i,zero_frequency-dist[1]+j]/time_res for i in range(2*dist[0])] for j in range(2*dist[1])]))
+        z=(np.array([[kmc[2,zero_angle-dist[0]+i,zero_frequency-dist[1]+j]/time_res for i in range(2*dist[0])] for j in range(2*dist[1])]))
         Z = z.reshape(( np.prod(size)))
         ydata = Z
         popt, pcov = curve_fit(f_0_1, xdata, ydata)
@@ -183,9 +181,9 @@ def power_mismatch(data,avg_for_each_hour = True, time_res = 1,dispatch=1,start_
     daily_prof_25[24*3600*time_res:] = day[0:1*3600*time_res]
     for i in range(sign.size):
         if np.mean(np.diff(daily_prof_25[(i+1)*(int(4/dispatch))*900 -int(s*60) : (i+1)*(int(4/dispatch))*900 + int(e*60)])) > 0:
-            sign[(i+1)%24]=1
+            sign[(i+1)%(24*dispatch)]=1
         else:
-            sign[(i+1)%24]=-1
+            sign[(i+1)%(24*dispatch)]=-1
     P_arr = np.zeros(24*dispatch)
     for i in range(24*dispatch):
         P_arr[i] = np.mean(np.abs(Delta_P_slopes[i,:]))
@@ -282,7 +280,8 @@ def Euler_Maruyama(data,c_1,c_2_decay,Delta_P,epsilon,time_res = 1,dispatch = 1,
                     P_slow[i] = i%(900/delta_t*int(4/dispatch))/60
                 if np.abs(omega[i-1]) > prim_control_lim:
                     c_1_weight[i] = prim_weight            
-                Delta_P_model_3[i] = 1* P_slow[i] * Delta_P[int((i//(int(4/dispatch)*900/delta_t))%(dispatch*24))]  +(1-P_slow[i])*  Delta_P[int(((i//(int(4/dispatch)*900/delta_t))-1)%(dispatch*24))]     
+                #Delta_P_model_3[i] = 1* P_slow[i] * Delta_P[int((i//(int(4/dispatch)*900/delta_t))%(dispatch*24))]  +(1-P_slow[i])*  Delta_P[int(((i//(int(4/dispatch)*900/delta_t))-1)%(dispatch*24))]    
+                Delta_P_model_3[i] = Delta_P[int((i//(int(4/dispatch)*900/delta_t))%(dispatch*24))]  
             c_2[i] = c_2_decay*(3*(c_1[0])*(omega[i-1] )**2 + c_1[1])
             epsilon_model_3[i] = np.sqrt(2*(epsilon[0]*omega[i-1]**2 + epsilon[1])) 
             theta[i] = theta[i-1] + delta_t * omega[i-1]
@@ -292,7 +291,7 @@ def Euler_Maruyama(data,c_1,c_2_decay,Delta_P,epsilon,time_res = 1,dispatch = 1,
          epsilon_model_4 = np.zeros(time.size)
          c_1_weight = np.ones(time.size)
          trend_daily = np.zeros(time.size)
-         day = daily_profile(data=data,time_res = time_res)
+         day = daily_profile(data=data_filter(data),time_res = time_res)
          
          for i in range(1,time.size):
              if np.abs(omega[i-1]) > prim_control_lim:
