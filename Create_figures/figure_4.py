@@ -1,4 +1,4 @@
-# %% Created by Leonardo Rydin Gorjão, Ulrich Oberhofer, and Benjamin
+# %% Created by Leonardo Rydin Gorjão, Ulrich Jakob Oberhofer, and Benjamin
 # Schäfer. Most python libraries are standard (e.g. via Anaconda). If TeX is not
 # present in your system, comment out lines 10 to 13.
 
@@ -12,7 +12,9 @@ matplotlib.rcParams.update({'font.family': 'serif', 'font.size': 18,
     'axes.labelsize': 18,'axes.titlesize': 28, 'figure.titlesize' : 28})
 matplotlib.rcParams['text.usetex'] = True
 
-data_sources = ['Iceland.npz', 'Ireland.npz', 'Balearic.npz']
+#data_sources = ['Iceland.npz', 'Ireland.npz', 'Balearic.npz']
+data_sources = ['Iceland_data.npz', 'Irish_data.npz', 'Balearic_data.npz']
+
 colours = ['#D81B60','#1E88E5','#FFC107','#004D40']
 labels = ['Model 1','Model 2','Model 3','Model 4']
 # %%
@@ -39,19 +41,21 @@ def generate_KL_divergence(loc, bins, datatype, ranges=(None,None)):
 
     return KL
 
-def generate_KS_test(loc, bins, datatype):
-    hist_freq = np.zeros((5, bins))
-    KS = np.zeros(4)
-
-    data = np.load(loc)
-    ls = ['_origin', '_model1', '_model2', '_model3', '_model4']
-    l = [datatype+s for s in ls] # remove [:-1] when 2d model ready
-
-    x_freq = [data[ele] for ele in l]
-    for i in range(1,4):
-        KS_freq[i-1] = st.kstest(x_freq[0], x_freq[i])[0]
-
-    return KS_freq
+# =============================================================================
+# def generate_KS_test(loc, bins, datatype):
+#     hist_freq = np.zeros((5, bins))
+#     KS = np.zeros(4)
+# 
+#     data = np.load(loc)
+#     ls = ['_origin', '_model1', '_model2', '_model3', '_model4']
+#     l = [datatype+s for s in ls] # remove [:-1] when 2d model ready
+# 
+#     x_freq = [data[ele] for ele in l]
+#     for i in range(1,4):
+#         KS_freq[i-1] = st.kstest(x_freq[0], x_freq[i])[0]
+# 
+#     return KS_freq
+# =============================================================================
 
 # %%
 fig, ax = plt.subplots(1, 1, figsize=(7,3.5))
@@ -98,4 +102,3 @@ ax.legend(handlelength=1, handletextpad=.5, ncol=4, columnspacing=1, loc=1,
     bbox_to_anchor=(1.05,1.24))
 fig.subplots_adjust(left=.12, bottom=.11, right=.88, top=.85, wspace=.4)
 fig.savefig('figs/fig4.pdf', transparent=True)
-
