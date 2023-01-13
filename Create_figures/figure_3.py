@@ -1,4 +1,4 @@
-# %% Created by Leonardo Rydin Gorjão, Ulrich Oberhofer, and Benjamin
+#%% Created by Leonardo Rydin Gorjão, Ulrich Jakob Oberhofer, and Benjamin
 # Schäfer. Most python libraries are standard (e.g. via Anaconda). If TeX is not
 # present in your system, comment out lines 9 to 12.
 
@@ -12,7 +12,9 @@ matplotlib.rcParams.update({'font.family': 'serif', 'font.size': 18,
 matplotlib.rcParams['text.usetex'] = True
 from matplotlib.ticker import LogLocator, NullFormatter
 
-data_sources = ['Iceland.npz', 'Ireland.npz', 'Balearic.npz']
+#data_sources = ['Iceland.npz', 'Ireland.npz', 'Balearic.npz']
+data_sources = ['Iceland_data.npz', 'Irish_data.npz', 'Balearic_data.npz']
+
 colours = ['k','#D81B60','#1E88E5','#FFC107','#004D40']
 labels = ['Empirical','Model 1','Model 2','Model 3','Model 4']
 ls = ['--','-','-','-','-']
@@ -106,4 +108,4 @@ ax[0,2].set_title('autocorrelation', fontsize=20)
 
 ax[0,0].legend(handlelength=1, handletextpad=.5, ncol=5, columnspacing=1, loc=1, bbox_to_anchor=(2.65,1.45))
 fig.subplots_adjust(left=.08, bottom=.08, right=.99, top=.89, wspace=.25, hspace=.04)
-fig.savefig('figs/fig3.pdf', transparent=True)
+#fig.savefig('figs/fig3.pdf', transparent=True)
