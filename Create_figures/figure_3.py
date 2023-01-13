@@ -108,4 +108,4 @@ ax[0,2].set_title('autocorrelation', fontsize=20)
 
 ax[0,0].legend(handlelength=1, handletextpad=.5, ncol=5, columnspacing=1, loc=1, bbox_to_anchor=(2.65,1.45))
 fig.subplots_adjust(left=.08, bottom=.08, right=.99, top=.89, wspace=.25, hspace=.04)
-#fig.savefig('figs/fig3.pdf', transparent=True)
+fig.savefig('figs/fig3.pdf', transparent=True)
