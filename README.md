@@ -3,4 +3,4 @@ power-grid frequency applied to islands".
 \
 The power grids considered are the Irish grid, the Balearic grid and the grid of Iceland.
 \
-Synthetic time series are created in [Create_synthetic_time_series.ipynb](Stochastic-modelling-of-power-grid-frequency-applied-to-islands/Create_synthetic_time_series.ipynb).
+Synthetic time series are created in [Create_synthetic_time_series.ipynb](KIT-IAI-DRACOS/Stochastic-modelling-of-power-grid-frequency-applied-to-islands/Create_synthetic_time_series.ipynb).
