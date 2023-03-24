@@ -1,5 +1,5 @@
 import numpy as np
-from Help_functions import extreme_points, isolated_peaks, const_windows, nan_windows
+from utils.Help_functions import extreme_points, isolated_peaks, const_windows, nan_windows
 
 def data_cleaning(data ):
     # %%  Set parameters for identifying corrupted data
