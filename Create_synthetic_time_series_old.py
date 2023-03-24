@@ -9,8 +9,7 @@ import os
 from Data_cleaning import data_cleaning
 from Functions import data_filter, integrate_omega, KM_Coeff_1, KM_Coeff_2, daily_profile, power_mismatch, exp_decay, Euler_Maruyama, Increments, autocor 
 
-#grids = ['Iceland','Irish','Balearic']    
-grids = ['Balearic']  
+
 models = ['model 1','model 2','model 3','model 4']
 
 #freq_orig = data/(2*np.pi+50)
@@ -188,8 +187,7 @@ for grid in grids:
   increments_model_3[grid].append(Increments(freq_synth_model_3,time_res = delta_t,step = 1))
   autocor_model_3[grid].append(autocor(freq_synth_model_3,time_res = delta_t))
   
-   
-'''Model 4...'''
+
 '''Model 4...'''
 synth_data_model_4 = {i:[]for i in grids}
 increments_model_4 = {i:[]for i in grids}
